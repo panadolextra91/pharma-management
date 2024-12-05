@@ -7,7 +7,7 @@ import Categories from "./components/Categories";
 import SalesInvoices from "./components/SalesInvoices";
 import Suppliers from './components/Suppliers';
 import Profile from './components/Profile';
-import UserDashboard from "./components/UserDashboard";
+import AdminDashboard from "./components/AdminDashboard";
 
 function App() {
     const ProtectedRoute = ({ children, role }) => {
@@ -25,9 +25,9 @@ function App() {
                         <PharmacistDashboard />
                     </ProtectedRoute>
                 } />
-                <Route path="/user-dashboard" element={
+                <Route path="/admin-dashboard" element={
                     <ProtectedRoute role="admin">
-                        <UserDashboard />
+                        <AdminDashboard />
                     </ProtectedRoute>
                 } />
                 <Route path='/medicines' element={<Medicines />} />

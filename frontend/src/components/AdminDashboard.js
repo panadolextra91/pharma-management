@@ -1,4 +1,4 @@
-// UserDashboard.js
+// AdminDashboard.js
 import React from 'react';
 import { Avatar, Button, Card, Col, Row } from 'antd';
 import {

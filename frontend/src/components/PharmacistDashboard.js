@@ -46,7 +46,7 @@ const PharmacistDashboard = () => {
             fetchDashboardData();
           } else {
             message.error("Unauthorized access.");
-            navigate('/user-dashboard');
+            navigate('/admin-dashboard');
           }
         })
         .catch(() => {
