@@ -11,7 +11,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import logo from "../imgs/trace.svg";
 
-const UserDashboard = () => {
+const AdminDashboard = () => {
     const navigate = useNavigate();
     return (
         <div className="dashboard-container">
@@ -59,4 +59,4 @@ const UserDashboard = () => {
         </div>
     );
 };
-export default UserDashboard;
+export default AdminDashboard;
