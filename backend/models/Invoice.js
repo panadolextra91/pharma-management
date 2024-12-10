@@ -19,6 +19,10 @@ const Invoice = sequelize.define('Invoice', {
         type: DataTypes.ENUM('sale', 'purchase'),
         allowNull: false,
     },
+    customer_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    }
 }, {
     tableName: 'invoices',
     timestamps: false,

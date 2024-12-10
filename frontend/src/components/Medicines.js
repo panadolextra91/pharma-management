@@ -211,25 +211,59 @@ const Medicines = () => {
     return (
         <div className="medicines-container">
             <aside className="sidebar">
-                <div className="border">
-                    <img src={logo} alt='MediMaster' className='logo-image'/>
-                    <h2>Medi<br/>Master</h2>
-                </div>
-                <div className='menu'>
-                    <nav className="nav">
-                        <ul>
-                            <li><a href="/dashboard"><HomeOutlined /> Dashboard</a></li>
-                            <li><a href="/medicines"><MedicineBoxOutlined /> Medicines</a></li>
-                            <li><a href="/categories"><AppstoreOutlined /> Categories</a></li>
-                            <li><a href="/suppliers"><TeamOutlined /> Suppliers</a></li>
-                            <li><a href="/sales-invoices"><FileTextOutlined /> Sales & Invoices</a></li>
-                            <li><a href="/reports"><BarChartOutlined /> Reports</a></li>
-                            <li><a href="/profile"><UserOutlined /> User Profile</a></li>
-                            <li><a href='/'><LoginOutlined /> Logout</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </aside>
+          <div className="border">
+            <img src={logo} alt="MediMaster" className="logo-image" />
+            <h2>
+              Medi
+              <br />
+              Master
+            </h2>
+          </div>
+          <nav>
+            <ul>
+              <li>
+                <a href="/dashboard">
+                  <HomeOutlined /> Dashboard
+                </a>
+              </li>
+              <li>
+                <a href="/medicines">
+                  <MedicineBoxOutlined /> Medicines
+                </a>
+              </li>
+              <li>
+                <a href="/categories">
+                  <AppstoreOutlined /> Categories
+                </a>
+              </li>
+              <li>
+                <a href="/suppliers">
+                  <TeamOutlined /> Suppliers
+                </a>
+              </li>
+              <li>
+                <a href="/sales-invoices">
+                  <FileTextOutlined /> Sales & Invoices
+                </a>
+              </li>
+              <li>
+                <a href="/reports">
+                  <BarChartOutlined /> Reports
+                </a>
+              </li>
+              <li>
+                <a href="/profile">
+                  <UserOutlined /> User Profile
+                </a>
+              </li>
+              <li>
+                <a href="/">
+                  <LoginOutlined /> Logout
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </aside>
 
             <main className="main-content">
                 <header className="header">

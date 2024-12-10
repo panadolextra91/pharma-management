@@ -49,8 +49,8 @@ const Profile = () => {
                     <img src={logo} alt='MediMaster' className='logo-image'/>
                     <h2>Medi<br/>Master</h2>
                 </div>
-                <div className='menu'>
-                    <nav className="nav">
+                <div>
+                    <nav>
                         <ul>
                             <li>
                                 <a href="/dashboard">

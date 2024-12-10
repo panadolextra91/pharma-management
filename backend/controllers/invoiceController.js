@@ -1,7 +1,6 @@
-const Invoice = require('../models/Invoice');
-const InvoiceItem = require('../models/InvoiceItem');
-const Medicine = require('../models/Medicines');
+
 //invoiceController.js
+const { Invoice, InvoiceItem, Medicine, Customer } = require('../models'); // Ensure models are imported
 
 // Helper function to recalculate total amount
 const recalculateInvoiceTotal = async (invoice_id) => {
@@ -15,16 +14,17 @@ const recalculateInvoiceTotal = async (invoice_id) => {
 exports.getAllInvoices = async (req, res) => {
     try {
         const invoices = await Invoice.findAll({
-            include: {
-                model: InvoiceItem,
-                as: 'items',
-                include: [
-                    {
-                        model: Medicine,
-                        as: 'medicine' // Make sure 'medicine' is the alias used in InvoiceItem model
-                    }
-                ]
-            }
+            include: [
+                {
+                    model: InvoiceItem,
+                    as: 'items',
+                    include: [{ model: Medicine, as: 'medicine' }],
+                },
+                {
+                    model: Customer,
+                    as: 'customer', // Include customer details
+                },
+            ],
         });
         res.status(200).json(invoices);
     } catch (error) {
@@ -32,6 +32,7 @@ exports.getAllInvoices = async (req, res) => {
         res.status(500).json({ error: 'Failed to retrieve invoices', details: error.message });
     }
 };
+
 
 
 // Get a single invoice by ID
@@ -62,43 +63,53 @@ exports.getInvoiceById = async (req, res) => {
 
 
 // Create a new invoice and its items
+// Create a new invoice and its items
 exports.createInvoice = async (req, res) => {
-    const { invoice_date, type, items } = req.body;
+    const { invoice_date, type, items, customer_id } = req.body;
 
     try {
-        // Calculate total amount and fetch prices for each item
-        let totalAmount = 0;
-
-        for (const item of items) {
-            const medicine = await Medicine.findByPk(item.medicine_id);
-            if (!medicine) {
-                return res.status(404).json({ error: `Medicine with ID ${item.medicine_id} not found` });
+        // Check if customer exists
+        if (customer_id) {
+            const customer = await Customer.findByPk(customer_id);
+            if (!customer) {
+                return res.status(404).json({ error: 'Customer not found' });
             }
-            item.price = medicine.price; // Set the price from the medicine record
-            totalAmount += item.price * item.quantity;
         }
 
-        // Create the invoice
-        const invoice = await Invoice.create({ invoice_date, total_amount: totalAmount, type });
+        // Calculate total amount
+        const invoiceItems = await Promise.all(
+            items.map(async (item) => {
+                const medicine = await Medicine.findByPk(item.medicine_id);
+                if (!medicine) {
+                    throw new Error(`Medicine with ID ${item.medicine_id} not found`);
+                }
+                return { ...item, price: medicine.price };
+            })
+        );
+        const totalAmount = invoiceItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-        // Add invoice items with fetched prices
-        for (const item of items) {
+        // Create the invoice
+        const invoice = await Invoice.create({ invoice_date, type, total_amount: totalAmount, customer_id });
+
+        // Create invoice items
+        for (const item of invoiceItems) {
             await InvoiceItem.create({
                 invoice_id: invoice.id,
                 medicine_id: item.medicine_id,
                 quantity: item.quantity,
-                price: item.price // Use the fetched price
+                price: item.price,
             });
         }
 
         res.status(201).json(invoice);
     } catch (error) {
-        console.error('Error creating invoice:', error);
-        res.status(500).json({ error: 'Failed to create invoice' });
+        console.error('Error creating invoice:', error.message);
+        res.status(500).json({ error: 'Failed to create invoice', details: error.message });
     }
 };
 
-// Update an invoice
+
+
 // Update an invoice and its items
 exports.updateInvoice = async (req, res) => {
     const { id } = req.params;

@@ -1,52 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     HomeOutlined,
     MedicineBoxOutlined,
     AppstoreOutlined,
     TeamOutlined,
-    ShoppingCartOutlined,
     FileTextOutlined,
-    BarChartOutlined,
     UserOutlined,
     LoginOutlined,
     EditOutlined,
     DeleteOutlined,
     PlusOutlined
 } from '@ant-design/icons';
-import { Avatar, Button, Space, Table } from "antd";
+import { Avatar, Button, Space, Table, message } from "antd";
+import axios from "axios";
 import logo from '../imgs/trace.svg';
 import './SalesInvoices.css';
 import AddInvoice from "./AddInvoice";
 import EditInvoice from "./EditInvoice";
-//SalesInvoices.js
-const SalesInvoices = () => {
-    // State for managing invoices with mocking data
-    const [invoices, setInvoices] = useState([
-        {
-            key: '1',
-            customerName: 'John Doe',
-            status: 'Paid',
-            items: [
-                { key: '1', name: 'Paracetamol', quantity: 2, price: 10 },
-                { key: '2', name: 'Ibuprofen', quantity: 1, price: 15 }
-            ],
-            totalAmount: 35
-        },
-        {
-            key: '2',
-            customerName: 'Jane Smith',
-            status: 'Pending',
-            items: [
-                { key: '1', name: 'Amoxicillin', quantity: 3, price: 12 },
-                { key: '2', name: 'Vitamin C', quantity: 2, price: 5 }
-            ],
-            totalAmount: 46
-        }
-    ]);
 
+const SalesInvoices = () => {
+    const [invoices, setInvoices] = useState([]);
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [editingInvoice, setEditingInvoice] = useState(null);
+
+    // Fetch invoices from the backend
+    useEffect(() => {
+        fetchInvoices();
+    }, []);
+
+    const fetchInvoices = async () => {
+        try {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const response = await axios.get('http://localhost:3000/api/invoices', {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const fetchedInvoices = response.data.map((invoice) => ({
+                ...invoice,
+                key: invoice.id,
+                customerName: invoice.customer?.name || 'N/A', // Map customer name
+                totalAmount: Number(invoice.total_amount),
+                items: invoice.items.map((item) => ({
+                    ...item,
+                    name: item.medicine.name,
+                })),
+            }));
+            setInvoices(fetchedInvoices);
+        } catch (error) {
+            console.error('Error fetching invoices:', error);
+            message.error('Failed to fetch invoices');
+        }
+    };
+
+
+
 
     // Show the Add Invoice Modal
     const showAddInvoiceModal = () => {
@@ -59,29 +67,18 @@ const SalesInvoices = () => {
         setIsEditModalVisible(true);
     };
 
-    // Handle the addition of a new invoice
-    const handleAddInvoice = (newInvoice) => {
-        setInvoices([...invoices, { key: invoices.length + 1, ...newInvoice }]);
-        setIsAddModalVisible(false);
-    };
-
-    // Handle the editing of an existing invoice
-    const handleEditInvoice = (updatedInvoice) => {
-        const updatedInvoices = invoices.map((invoice) =>
-            invoice.key === updatedInvoice.key ? updatedInvoice : invoice
-        );
-        setInvoices(updatedInvoices);
-        setIsEditModalVisible(false);
-        setEditingInvoice(null);
-    };
-
     // Handle the deletion of an invoice
-    const deleteInvoice = (key) => {
-        const updatedInvoices = invoices.filter((invoice) => invoice.key !== key);
-        setInvoices(updatedInvoices);
+    const deleteInvoice = async (key) => {
+        try {
+            await axios.delete(`http://localhost:3000/api/invoices/${key}`);
+            message.success('Invoice deleted successfully');
+            fetchInvoices(); // Refresh the list
+        } catch (error) {
+            console.error('Error deleting invoice:', error);
+            message.error('Failed to delete invoice');
+        }
     };
 
-    // Cancel modal
     const handleCancel = () => {
         setIsAddModalVisible(false);
         setIsEditModalVisible(false);
@@ -95,15 +92,15 @@ const SalesInvoices = () => {
             key: 'customerName'
         },
         {
-            title: 'Status',
-            dataIndex: 'status',
-            key: 'status'
+            title: 'Type',
+            dataIndex: 'type',
+            key: 'type'
         },
         {
             title: 'Total Amount',
             dataIndex: 'totalAmount',
             key: 'totalAmount',
-            render: (text) => `$${text}`
+            render: (text) => `$${text.toFixed(2)}`
         },
         {
             title: 'Actions',
@@ -132,7 +129,6 @@ const SalesInvoices = () => {
 
     return (
         <div className="sales-container">
-            {/* Sidebar Navigation */}
             <aside className="sidebar">
                 <div className="border">
                     <img src={logo} alt="MediMaster" className="logo-image" />
@@ -141,55 +137,47 @@ const SalesInvoices = () => {
                         Master
                     </h2>
                 </div>
-                <div className="menu">
-                    <nav className="nav">
-                        <ul>
-                            <li>
-                                <a href="/dashboard">
-                                    <HomeOutlined /> Dashboard
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/medicines">
-                                    <MedicineBoxOutlined /> Medicines
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/categories">
-                                    <AppstoreOutlined /> Categories
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/suppliers">
-                                    <TeamOutlined /> Suppliers
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/sales-invoices">
-                                    <FileTextOutlined /> Sales & Invoices
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/reports">
-                                    <BarChartOutlined /> Reports
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/profile">
-                                    <UserOutlined /> User Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/">
-                                    <LoginOutlined /> Logout
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+                <nav>
+                    <ul>
+                        <li>
+                            <a href="/dashboard">
+                                <HomeOutlined /> Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/medicines">
+                                <MedicineBoxOutlined /> Medicines
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/categories">
+                                <AppstoreOutlined /> Categories
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/suppliers">
+                                <TeamOutlined /> Suppliers
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/sales-invoices">
+                                <FileTextOutlined /> Sales & Invoices
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/profile">
+                                <UserOutlined /> User Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/">
+                                <LoginOutlined /> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </aside>
 
-            {/* Main Content */}
             <main className="main-content">
                 <header className="header">
                     <div className="header-left">
@@ -213,12 +201,18 @@ const SalesInvoices = () => {
                 </section>
                 <AddInvoice
                     visible={isAddModalVisible}
-                    onCreate={handleAddInvoice}
+                    onCreate={(newInvoice) => {
+                        setIsAddModalVisible(false);
+                        fetchInvoices(); // Refresh the list
+                    }}
                     onCancel={handleCancel}
                 />
                 <EditInvoice
                     visible={isEditModalVisible}
-                    onEdit={handleEditInvoice}
+                    onEdit={(updatedInvoice) => {
+                        setIsEditModalVisible(false);
+                        fetchInvoices(); // Refresh the list
+                    }}
                     onCancel={handleCancel}
                     invoice={editingInvoice}
                 />

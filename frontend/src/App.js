@@ -11,8 +11,34 @@ import AdminDashboard from "./components/AdminDashboard";
 
 function App() {
     const ProtectedRoute = ({ children, role }) => {
-        const storedRole = sessionStorage.getItem('userRole');
-        if (storedRole === role) return children;
+        const storedRole =
+            sessionStorage.getItem("userRole") || localStorage.getItem("userRole");
+
+        console.log("Stored Role:", storedRole); // Debug log
+        console.log("Required Role:", role);     // Debug log
+
+        // If no role is found, redirect to the login page
+        if (!storedRole) {
+            console.error("No role found. Redirecting to login.");
+            return <Navigate to="/" replace />;
+        }
+
+        // If the stored role matches the required role, grant access
+        if (storedRole === role) {
+            console.log("Access granted for role:", storedRole); // Debug log
+            return children;
+        }
+
+        // Redirect based on mismatched roles
+        console.error(`Unauthorized access for role: ${storedRole}`);
+        if (storedRole === "admin") {
+            return <Navigate to="/admin-dashboard" replace />;
+        }
+        if (storedRole === "pharmacist") {
+            return <Navigate to="/dashboard" replace />;
+        }
+
+        // Default redirect for unauthorized roles
         return <Navigate to="/" replace />;
     };
 

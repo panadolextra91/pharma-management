@@ -14,17 +14,18 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
         }
     }, [invoice, form]);
 
+    const handleSave = () => {
+        form.validateFields().then((values) => {
+            onEdit({ ...invoice, ...values, items });
+        });
+    };
+
+
     const handleItemChange = (key, value, field) => {
         const updatedItems = items.map((item) =>
             item.key === key ? { ...item, [field]: value } : item
         );
         setItems(updatedItems);
-    };
-
-    const handleSave = () => {
-        form.validateFields().then((values) => {
-            onEdit({ ...values, items });
-        });
     };
 
     const columns = [

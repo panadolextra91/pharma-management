@@ -14,6 +14,7 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+
         try {
             const response = await axios.post('http://localhost:3000/api/users/login', {
                 username,
@@ -35,20 +36,32 @@ const Login = () => {
             });
 
             const role = profileResponse.data.role;
-            sessionStorage.setItem('userRole', role);
+
+            // Save the role
+            if (remember) {
+                localStorage.setItem('userRole', role);
+            } else {
+                sessionStorage.setItem('userRole', role);
+            }
+
+            // Debugging logs
+            console.log("Token:", token);
+            console.log("Role:", role);
 
             // Navigate based on role
             if (role === 'pharmacist') {
                 navigate('/dashboard');
             } else if (role === 'admin') {
-                navigate('/user-dashboard');
+                navigate('/admin-dashboard');
             } else {
                 message.error("Unauthorized role");
             }
         } catch (error) {
             message.error("Invalid username or password");
+            console.error("Login error:", error);
         }
     };
+
 
     return (
         <div className='login-container'>
