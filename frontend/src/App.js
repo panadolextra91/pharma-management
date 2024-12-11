@@ -10,7 +10,8 @@ import Profile from './components/Profile';
 import AdminDashboard from "./components/AdminDashboard";
 import AdminSidebar from './components/AdminSidebar';
 import PharmacistSidebar from './components/PharmacistSidebar';
-
+import UserManage from "./components/UserManage";
+import CustomerManage from "./components/CustomerManage";
 function App() {
     const ProtectedRoute = ({ children, role }) => {
         const storedRole =
@@ -63,8 +64,8 @@ function App() {
                 <Route path='/suppliers' element={<Suppliers />} />
                 <Route path='/sales-invoices' element={<SalesInvoices />} />
                 <Route path='/profile' element={<Profile />} />
-                <Route path='/admine-sidebar' element={AdminSidebar}/>
-                <Route path='/pharmacist-sidebar' element={PharmacistSidebar}/>
+                <Route path='/users-manage' element={<UserManage/>}/>
+                <Route path='/customers-manage' element={<CustomerManage/>}/>
             </Routes>
         </Router>
     );

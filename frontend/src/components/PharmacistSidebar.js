@@ -1,5 +1,13 @@
 import React from 'react';
-import { HomeOutlined, MedicineBoxOutlined, AppstoreOutlined, TeamOutlined, FileTextOutlined, UserOutlined, LoginOutlined } from '@ant-design/icons';
+import {
+    TruckOutlined,
+    HomeOutlined,
+    MedicineBoxOutlined,
+    AppstoreOutlined,
+    TeamOutlined,
+    FileTextOutlined,
+    LoginOutlined
+} from '@ant-design/icons';
 import logo from '../imgs/trace.svg'; // Replace with the correct path to your logo file
 import './PharmacistSidebar.css'; // Optional: Import CSS for styling if needed
 
@@ -18,32 +26,37 @@ const PharmacistSidebar = () => {
                 <ul>
                     <li>
                         <a href="/dashboard">
-                            <HomeOutlined /> Pharmacy
+                            <HomeOutlined/> Pharmacy
                         </a>
                     </li>
                     <li>
                         <a href="/medicines">
-                            <MedicineBoxOutlined /> Medicines
+                            <MedicineBoxOutlined/> Medicines
                         </a>
                     </li>
                     <li>
                         <a href="/categories">
-                            <AppstoreOutlined /> Categories
+                            <AppstoreOutlined/> Categories
                         </a>
                     </li>
                     <li>
                         <a href="/suppliers">
-                            <TeamOutlined /> Suppliers
+                            <TruckOutlined/> Suppliers
                         </a>
                     </li>
                     <li>
                         <a href="/sales-invoices">
-                            <FileTextOutlined /> Sales & Invoices
+                            <FileTextOutlined/> Sales & Invoices
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/customers-manage">
+                            <TeamOutlined/> Customers
                         </a>
                     </li>
                     <li>
                         <a href="/">
-                            <LoginOutlined /> Logout
+                            <LoginOutlined/> Logout
                         </a>
                     </li>
                 </ul>

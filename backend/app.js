@@ -20,6 +20,7 @@ const Location = require('./models/Location');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const path = require('path');
+const customerRoutes = require('./routes/customerRoutes');
 
 // Serve static files from the 'uploads' directory
 //app.js
@@ -64,6 +65,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/invoice-items', invoiceItemRoutes);
 app.use('/api/locations', locationRoutes);
+app.use('/api/customers', customerRoutes);
 app.use((req, res, next) => {
     console.log(`Incoming request: ${req.method} ${req.url}`);
     next();

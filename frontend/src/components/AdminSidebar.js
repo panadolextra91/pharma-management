@@ -1,5 +1,14 @@
 import React from 'react';
-import { HomeOutlined, MedicineBoxOutlined, AppstoreOutlined, TeamOutlined, FileTextOutlined, UserOutlined, LoginOutlined } from '@ant-design/icons';
+import {
+    HomeOutlined,
+    MedicineBoxOutlined,
+    AppstoreOutlined,
+    TeamOutlined,
+    FileTextOutlined,
+    UserOutlined,
+    LoginOutlined,
+    TruckOutlined,
+} from '@ant-design/icons';
 import logo from '../imgs/trace.svg'; // Replace with the correct path to your logo file
 import './AdminSidebar.css'; // Optional: Import CSS for styling if needed
 
@@ -33,7 +42,7 @@ const AdminSidebar = () => {
                     </li>
                     <li>
                         <a href="/suppliers">
-                            <TeamOutlined /> Suppliers
+                            <TruckOutlined /> Suppliers
                         </a>
                     </li>
                     <li>
@@ -42,8 +51,13 @@ const AdminSidebar = () => {
                         </a>
                     </li>
                     <li>
-                        <a href="/users">
-                            <UserOutlined /> User Management
+                        <a href="/users-manage">
+                            <UserOutlined /> Users
+                        </a>
+                    </li>
+                    <li>
+                        <a href='/customers-manage'>
+                            <TeamOutlined/> Customers
                         </a>
                     </li>
                     <li>
