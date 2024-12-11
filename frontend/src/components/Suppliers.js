@@ -84,12 +84,34 @@ const Suppliers = () => {
         }
     };
 
-    const handleEditSupplier = (values) => {
-        const updatedSuppliers = suppliers.map(supplier =>
-            supplier.key === currentSupplier.key ? { ...supplier, ...values } : supplier
-        );
-        setSuppliers(updatedSuppliers);
-        setIsEditModalVisible(false);
+    const handleEditSupplier = async (values) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const payload = {
+                id: currentSupplier.key,
+                name: values.name,
+                contact_info: values.contact_info,
+                address: values.address,
+            };
+    
+            const response = await axios.put(
+                `http://localhost:3000/api/suppliers/${payload.id}`,
+                payload,
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+    
+            const updatedValues = suppliers.map(sup =>
+                sup.id === payload.id ? { ...sup, ...response.data } : sup
+            );
+            setSuppliers(updatedValues);
+            message.success("Supplier updated successfully.");
+            setIsEditModalVisible(false);
+        } catch (error) {
+            console.error("Error updating medicine:", error);
+            message.error("Failed to update supplier. Please try again.");
+        }
     };
 
     const handleCancelAdd = () => {
