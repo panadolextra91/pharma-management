@@ -20,6 +20,7 @@ import AddMedicineForm from "./AddMedicineForm";
 import EditMedicineForm from "./EditMedicineForm";
 import AdminSidebar from "./AdminSidebar";
 import PharmacistSidebar from "./PharmacistSidebar";
+import moment from "moment";
 
 const Medicines = () => {
     const LOW_STOCK_THRESHOLD = 20;
@@ -277,7 +278,7 @@ const Medicines = () => {
                     <Table columns={columns} dataSource={medicines} loading={loading} />
                 </section>
                 <AddMedicineForm visible={isAddModalVisible} onCreate={handleAddMedicine} onCancel={handleCancel} categories={categories} suppliers={suppliers} locations={locations} />
-                <EditMedicineForm visible={isEditModalVisible} onEdit={handleEditMedicine} onCancel={handleCancel} medicine={editingMedicine} />
+                <EditMedicineForm visible={isEditModalVisible} onEdit={handleEditMedicine} onCancel={handleCancel} medicine={editingMedicine} suppliers={suppliers} locations={locations} />
             </main>
         </div>
     );
