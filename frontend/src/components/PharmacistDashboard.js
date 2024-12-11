@@ -14,6 +14,7 @@ import {
 } from "@ant-design/icons";
 import logo from "../imgs/trace.svg";
 import "./PharmacistDashboard.css";
+import PharmacistSidebar from "./PharmacistSidebar";
 
 const PharmacistDashboard = () => {
   const navigate = useNavigate();
@@ -83,50 +84,7 @@ const PharmacistDashboard = () => {
 
   return (
       <div className="dashboard-container">
-        <aside className="sidebar">
-          <div className="border">
-            <img src={logo} alt="MediMaster" className="logo-image" />
-            <h2>
-              Medi
-              <br />
-              Master
-            </h2>
-          </div>
-          <nav>
-            <ul>
-              <li>
-                <a href="/dashboard">
-                  <HomeOutlined /> Dashboard
-                </a>
-              </li>
-              <li>
-                <a href="/medicines">
-                  <MedicineBoxOutlined /> Medicines
-                </a>
-              </li>
-              <li>
-                <a href="/categories">
-                  <AppstoreOutlined /> Categories
-                </a>
-              </li>
-              <li>
-                <a href="/suppliers">
-                  <TeamOutlined /> Suppliers
-                </a>
-              </li>
-              <li>
-                <a href="/sales-invoices">
-                  <FileTextOutlined /> Sales & Invoices
-                </a>
-              </li>
-              <li>
-                <a href="/">
-                  <LoginOutlined /> Logout
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </aside>
+        <PharmacistSidebar/>
 
         <main className="main-content">
           <header className="header">

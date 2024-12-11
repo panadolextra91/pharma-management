@@ -8,6 +8,8 @@ import SalesInvoices from "./components/SalesInvoices";
 import Suppliers from './components/Suppliers';
 import Profile from './components/Profile';
 import AdminDashboard from "./components/AdminDashboard";
+import AdminSidebar from './components/AdminSidebar';
+import PharmacistSidebar from './components/PharmacistSidebar';
 
 function App() {
     const ProtectedRoute = ({ children, role }) => {
@@ -61,6 +63,8 @@ function App() {
                 <Route path='/suppliers' element={<Suppliers />} />
                 <Route path='/sales-invoices' element={<SalesInvoices />} />
                 <Route path='/profile' element={<Profile />} />
+                <Route path='/admine-sidebar' element={AdminSidebar}/>
+                <Route path='/pharmacist-sidebar' element={PharmacistSidebar}/>
             </Routes>
         </Router>
     );

@@ -17,7 +17,8 @@ import logo from '../imgs/trace.svg';
 import './SalesInvoices.css';
 import AddInvoice from "./AddInvoice";
 import EditInvoice from "./EditInvoice";
-
+import AdminSidebar from "./AdminSidebar";
+import PharmacistSidebar from "./PharmacistSidebar";
 const SalesInvoices = () => {
     const [invoices, setInvoices] = useState([]);
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -28,6 +29,8 @@ const SalesInvoices = () => {
     useEffect(() => {
         fetchInvoices();
     }, []);
+
+    const userRole = sessionStorage.getItem('userRole');
 
     const fetchInvoices = async () => {
         try {
@@ -129,54 +132,7 @@ const SalesInvoices = () => {
 
     return (
         <div className="sales-container">
-            <aside className="sidebar">
-                <div className="border">
-                    <img src={logo} alt="MediMaster" className="logo-image" />
-                    <h2>
-                        Medi<br />
-                        Master
-                    </h2>
-                </div>
-                <nav>
-                    <ul>
-                        <li>
-                            <a href="/dashboard">
-                                <HomeOutlined /> Dashboard
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/medicines">
-                                <MedicineBoxOutlined /> Medicines
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/categories">
-                                <AppstoreOutlined /> Categories
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/suppliers">
-                                <TeamOutlined /> Suppliers
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/sales-invoices">
-                                <FileTextOutlined /> Sales & Invoices
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/profile">
-                                <UserOutlined /> User Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/">
-                                <LoginOutlined /> Logout
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </aside>
+            { userRole === 'admin' ? <AdminSidebar/> : <PharmacistSidebar/>}
 
             <main className="main-content">
                 <header className="header">
@@ -185,19 +141,19 @@ const SalesInvoices = () => {
                         <p>Dashboard / Sales & Invoices</p>
                     </div>
                     <div className="header-right">
-                        <Avatar size={50} icon={<UserOutlined />} />
+                        <Avatar size={50} icon={<UserOutlined/>}/>
                     </div>
                 </header>
                 <section className="sales-table">
                     <Button
                         type="primary"
-                        icon={<PlusOutlined />}
+                        icon={<PlusOutlined/>}
                         onClick={showAddInvoiceModal}
                         className='add-button'
                     >
                         Add Invoice
                     </Button>
-                    <Table columns={columns} dataSource={invoices} />
+                    <Table columns={columns} dataSource={invoices}/>
                 </section>
                 <AddInvoice
                     visible={isAddModalVisible}

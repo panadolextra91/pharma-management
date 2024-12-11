@@ -1,100 +1,100 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     HomeOutlined,
     MedicineBoxOutlined,
     AppstoreOutlined,
     TeamOutlined,
-    ShoppingCartOutlined,
     FileTextOutlined,
-    BarChartOutlined,
     UserOutlined,
     LoginOutlined,
     EditOutlined,
     DeleteOutlined
 } from '@ant-design/icons';
-import { Avatar, Button, Space, Table } from "antd";
+import { Avatar, Button, Space, Table, message } from "antd";
+import axios from "axios";
 import logo from '../imgs/trace.svg';
 import './Categories.css';
 import EditCategoryForm from "./EditCategoryForm";
-import axios from "axios";
-import config from '../config';
-//Categories.js
+import PharmacistSidebar from "./PharmacistSidebar";
+import AdminSidebar from "./AdminSidebar";
+
 const Categories = () => {
-    const [currentCategory, setCurrentCategory] = useState(null)
+    const [categories, setCategories] = useState([]);
+    const [currentCategory, setCurrentCategory] = useState(null);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-    const [categories, setCategories] = useState([
-        //Mocking data, we will use true data later
-        {
-            key: '1',
-            category: 'Pain Relief',
-            des: 'Medicines for pain management and relief'
-        },
-        {
-            key: '2',
-            category: 'Antibiotics',
-            des: 'Medicines for treating bacterial infections'
-        },
-        {
-            key: '3',
-            category: 'Allergy',
-            des: 'Medicines for allergy relief'
-        },
-        {
-            key: '4',
-            category: 'Cough & Cold',
-            des: 'Medicines for treating cough and cold symptoms'
-        },
-        {
-            key: '5',
-            category: 'Digestive Health',
-            des: 'Medicines for digestive health support'
-        },
-        {
-            key: '6',
-            category: 'Heart & Blood Pressure',
-            des: 'Medicines for heart and blood pressure management'
-        },
-        {
-            key: '7',
-            category: 'Diabetes',
-            des: 'Medicines for managing diabetes'
-        },
-        {
-            key: '8',
-            category: 'Skin Care',
-            des: 'Medicines and products for skin care'
-        },
-        {
-            key: '9',
-            category: 'Vitamins & Supplements',
-            des: 'Vitamins and dietary supplements'
-        },
-        {
-            key: '10',
-            category: 'First Aid',
-            des: 'Products for first aid and emergency care'
+
+    // Fetch categories from the backend
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const userRole = sessionStorage.getItem('userRole')
+
+    const fetchCategories = async () => {
+        try {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token'); // Retrieve the token
+            const response = await axios.get('http://localhost:3000/api/categories', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            const fetchedCategories = response.data.map(category => ({
+                key: category.id, // Map 'id' to 'key' for Ant Design Table
+                category: category.name,
+                des: category.description
+            }));
+            setCategories(fetchedCategories);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            if (error.response && error.response.status === 401) {
+                message.error('Unauthorized. Please log in again.');
+            } else {
+                message.error('Failed to fetch categories');
+            }
         }
-    ]);
+    };
+
     const showEditCategoryModal = (key) => {
         const categoryToEdit = categories.find(category => category.key === key);
         setCurrentCategory(categoryToEdit);
         setIsEditModalVisible(true);
     };
-    const handleEditCategory = (values) => {
-        const updatedCategories = categories.map(category =>
-            category.key === currentCategory.key ? { ...category, ...values } : category
-        );
-        setCategories(updatedCategories);
-        setIsEditModalVisible(false);
+
+    const handleEditCategory = async (values) => {
+        try {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            await axios.put(`http://localhost:3000/api/categories/${currentCategory.key}`, values, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            message.success('Category updated successfully');
+            fetchCategories(); // Refresh the list
+            setIsEditModalVisible(false);
+        } catch (error) {
+            console.error('Error updating category:', error);
+            message.error('Failed to update category');
+        }
     };
 
     const handleCancelEdit = () => {
         setIsEditModalVisible(false);
     };
-    const deleteCategory = (key) => {
-        // Filter out the category with the matching key
-        const updatedCategories = categories.filter(category => category.key !== key);
-        setCategories(updatedCategories);
+
+    const deleteCategory = async (key) => {
+        try {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            await axios.delete(`http://localhost:3000/api/categories/${key}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            message.success('Category deleted successfully');
+            fetchCategories(); // Refresh the list
+        } catch (error) {
+            console.error('Error deleting category:', error);
+            message.error('Failed to delete category');
+        }
     };
 
     const columns = [
@@ -123,58 +123,7 @@ const Categories = () => {
     return (
         <div className="categories-container">
             {/* Sidebar Navigation */}
-            <aside className="sidebar">
-                <div className="border">
-                    <img src={logo} alt='MediMaster' className='logo-image'/>
-                    <h2>Medi<br/>Master</h2>
-                </div>
-                <div>
-                    <nav>
-                        <ul>
-                            <li>
-                                <a href="/dashboard">
-                                    <HomeOutlined/> Dashboard
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/medicines">
-                                    <MedicineBoxOutlined/> Medicines
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/categories">
-                                    <AppstoreOutlined/> Categories
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/suppliers">
-                                    <TeamOutlined/> Suppliers
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/sales-invoices">
-                                    <FileTextOutlined/> Sales & Invoices
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/reports">
-                                    <BarChartOutlined/> Reports
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/profile">
-                                    <UserOutlined/> User Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a href='/'>
-                                    <LoginOutlined /> Logout
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </aside>
+            { userRole === 'admin' ? <AdminSidebar/> : <PharmacistSidebar/>}
 
             {/* Main Content */}
             <main className="main-content">
@@ -188,7 +137,7 @@ const Categories = () => {
                     </div>
                 </header>
                 <section className="categories-table">
-                    <Table columns={columns} dataSource={categories} />
+                    <Table columns={columns} dataSource={categories}/>
                 </section>
                 <EditCategoryForm
                     visible={isEditModalVisible}

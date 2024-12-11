@@ -2,19 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, message } from "antd";
 import axios from "axios";
-import {
-    HomeOutlined,
-    MedicineBoxOutlined,
-    AppstoreOutlined,
-    TeamOutlined,
-    FileTextOutlined,
-    BarChartOutlined,
-    UserOutlined,
-    LoginOutlined,
-} from "@ant-design/icons";
+import {UserOutlined} from "@ant-design/icons";
 import logo from "../imgs/trace.svg";
 import { getSessionData } from "../utils/sessionUtils"; // Centralized session utils
 import "./PharmacistDashboard.css";
+import AdminSidebar from "./AdminSidebar";
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -58,55 +50,7 @@ const AdminDashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <aside className="sidebar">
-                <div className="border">
-                    <img src={logo} alt="MediMaster" className="logo-image" />
-                    <h2>
-                        Medi
-                        <br />
-                        Master
-                    </h2>
-                </div>
-                <nav>
-                    <ul>
-                        <li>
-                            <a href="/admin-dashboard">
-                                <HomeOutlined /> Dashboard
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/medicines">
-                                <MedicineBoxOutlined /> Medicines
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/categories">
-                                <AppstoreOutlined /> Categories
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/suppliers">
-                                <TeamOutlined /> Suppliers
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/sales-invoices">
-                                <FileTextOutlined /> Sales & Invoices
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/users">
-                                <UserOutlined /> User Management
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/">
-                                <LoginOutlined /> Logout
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </aside>
+            <AdminSidebar></AdminSidebar>
 
             <main className="main-content">
                 <header className="header">
