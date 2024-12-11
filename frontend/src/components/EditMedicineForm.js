@@ -16,7 +16,7 @@ const EditMedicineForm = ({ visible, onEdit, onCancel, medicine, suppliers, loca
                 expirationDate: medicine.expiry_date ? moment(medicine.expiry_date) : null,
                 supplier: medicine.supplier || '',
                 location: medicine.location || '',
-                category: medicine.category || ''
+                category: medicine.category || '',
             });
         }
     }, [medicine, form]);
