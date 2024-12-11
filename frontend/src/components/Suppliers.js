@@ -122,9 +122,17 @@ const Suppliers = () => {
         setIsEditModalVisible(false);
     };
 
-    const deleteSupplier = (key) => {
-        const updatedSuppliers = suppliers.filter(supplier => supplier.key !== key);
-        setSuppliers(updatedSuppliers);
+    const deleteSupplier = async (id) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            await axios.delete(`http://localhost:3000/api/suppliers/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setSuppliers(suppliers.filter(supplier => supplier.id !== id));
+            message.success("Supplier deleted successfully.");
+        } catch (error) {
+            message.error("Failed to delete supplier.");
+        }
     };
 
     const columns = [
