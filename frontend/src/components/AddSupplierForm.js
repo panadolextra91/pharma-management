@@ -42,16 +42,16 @@ const AddSupplierForm = ({ visible, onCreate, onCancel }) => {
                     <Input placeholder="Enter supplier name" />
                 </Form.Item>
                 <Form.Item
-                    name="phone"
-                    label="Phone"
+                    name="contact_info"
+                    label="Contact"
                     rules={[
                         {
                             required: true,
-                            message: 'Please enter the supplier phone number!',
+                            message: 'Please enter the supplier email!',
                         },
                     ]}
                 >
-                    <Input placeholder="Enter phone number" />
+                    <Input placeholder="Enter email" />
                 </Form.Item>
                 <Form.Item
                     name="address"
