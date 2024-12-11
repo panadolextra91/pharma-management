@@ -70,13 +70,18 @@ const Suppliers = () => {
         setIsEditModalVisible(true);
     };
 
-    const handleAddSupplier = (values) => {
-        const newSupplier = {
-            key: suppliers.length + 1,
-            ...values,
-        };
-        setSuppliers([...suppliers, newSupplier]);
-        setIsAddModalVisible(false);
+    const handleAddSupplier = async (values) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.post('http://localhost:3000/api/suppliers', values, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setSuppliers([...suppliers, response.data]);
+            message.success("Supplier added successfully.");
+            setIsAddModalVisible(false);
+        } catch (error) {
+            message.error("Failed to add supplier.");
+        }
     };
 
     const handleEditSupplier = (values) => {
