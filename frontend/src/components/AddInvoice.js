@@ -144,18 +144,18 @@ const AddInvoice = ({ visible, onCancel }) => {
             let customerId = null;
 
             if (!values.customer_name || !customerPhone) {
-                const customerPayload = {
-                    name: values.customer_name || "Unnamed Customer",
-                    phone: customerPhone,
-                };
+                // const customerPayload = {
+                //     name: values.customer_name || "",
+                //     phone: customerPhone,
+                // };
 
-                const customerResponse = await axios.post(
-                    "http://localhost:3000/api/customers",
-                    customerPayload,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+                // const customerResponse = await axios.post(
+                //     "http://localhost:3000/api/customers",
+                //     customerPayload,
+                //     { headers: { Authorization: `Bearer ${token}` } }
+                // );
 
-                customerId = customerResponse.data.id;
+                // customerId = customerResponse.data.id;
             } else {
                 const response = await axios.get(
                     `http://localhost:3000/api/customers/phone/${customerPhone}`,
@@ -166,7 +166,7 @@ const AddInvoice = ({ visible, onCancel }) => {
 
             const payload = {
                 invoice_date: new Date().toISOString(),
-                type: "purchase",
+                type: values.status,
                 customer_id: customerId,
                 items: items.map((item) => ({
                     medicine_id: item.medicine_id,
@@ -260,11 +260,13 @@ const AddInvoice = ({ visible, onCancel }) => {
                     <Input placeholder="Customer name will appear here or can be left blank" />
                 </Form.Item>
 
-                <Form.Item name="status" label="Status" rules={[{ required: true }]}>
-                    <Select>
-                        <Option value="Paid">Paid</Option>
-                        <Option value="Pending">Pending</Option>
-                        <Option value="Overdue">Overdue</Option>
+                <Form.Item name="status" label="Type" rules={[{ required: true }]}>
+                    <Select
+                        placeholder="Select type"
+                    >
+                        <Option value="sale">Sale</Option>
+                        <Option value="purchase">Purchase</Option>
+                        {/* <Option value="Overdue">Overdue</Option> */}
                     </Select>
                 </Form.Item>
 
