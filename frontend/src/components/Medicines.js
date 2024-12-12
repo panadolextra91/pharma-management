@@ -21,9 +21,11 @@ import EditMedicineForm from "./EditMedicineForm";
 import AdminSidebar from "./AdminSidebar";
 import PharmacistSidebar from "./PharmacistSidebar";
 import moment from "moment";
+import {useNavigate} from "react-router-dom";
 
 const Medicines = () => {
     const LOW_STOCK_THRESHOLD = 20;
+    const navigate = useNavigate();
     const [medicines, setMedicines] = useState([]);
     const [categories, setCategories] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
@@ -40,6 +42,9 @@ const Medicines = () => {
         fetchLocations();
     }, []);
 
+    const handleAvaterClick = () => {
+        navigate('/profile');
+    }
     const role = sessionStorage.getItem('userRole');
 
     const fetchMedicines = async () => {
@@ -268,7 +273,9 @@ const Medicines = () => {
                         <p>Dashboard / Medicines</p>
                     </div>
                     <div className='header-right'>
-                        <Avatar size={50} icon={<UserOutlined />} />
+                        <div onClick={handleAvaterClick} style={{cursor: 'pointer'}}>
+                            <Avatar size={50} icon={<UserOutlined/>}/>
+                        </div>
                     </div>
                 </header>
                 <section className="medicines-table">

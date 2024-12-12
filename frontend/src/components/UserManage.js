@@ -12,8 +12,10 @@ import AddUserForm from "./AddUserForm";
 import EditUserForm from "./EditUserForm"; // Import the EditUserForm component
 import "./UserManage.css";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 const UserManage = () => {
+    const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [isAddUserVisible, setIsAddUserVisible] = useState(false);
     const [isEditUserVisible, setIsEditUserVisible] = useState(false);
@@ -21,6 +23,9 @@ const UserManage = () => {
     const [loading, setLoading] = useState(true);
 
     const userRole = sessionStorage.getItem("userRole");
+    const handleAvaterClick = () => {
+        navigate('/profile');
+    }
 
     useEffect(() => {
         fetchUsers();
@@ -166,7 +171,9 @@ const UserManage = () => {
                         <p>Dashboard / User Management</p>
                     </div>
                     <div className="header-right">
-                        <Avatar size={50} icon={<UserOutlined />} />
+                        <div onClick={handleAvaterClick} style={{cursor: 'pointer'}}>
+                            <Avatar size={50} icon={<UserOutlined/>}/>
+                        </div>
                     </div>
                 </header>
                 <section className="users-table">

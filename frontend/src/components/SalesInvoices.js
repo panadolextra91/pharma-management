@@ -19,7 +19,9 @@ import AddInvoice from "./AddInvoice";
 import EditInvoice from "./EditInvoice";
 import AdminSidebar from "./AdminSidebar";
 import PharmacistSidebar from "./PharmacistSidebar";
+import {useNavigate} from "react-router-dom";
 const SalesInvoices = () => {
+    const navigate = useNavigate();
     const [invoices, setInvoices] = useState([]);
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
@@ -29,6 +31,10 @@ const SalesInvoices = () => {
     useEffect(() => {
         fetchInvoices();
     }, []);
+
+    const handleAvaterClick = () => {
+        navigate('/profile');
+    }
 
     const userRole = sessionStorage.getItem('userRole');
 
@@ -141,7 +147,9 @@ const SalesInvoices = () => {
                         <p>Dashboard / Sales & Invoices</p>
                     </div>
                     <div className="header-right">
-                        <Avatar size={50} icon={<UserOutlined/>}/>
+                        <div onClick={handleAvaterClick} style={{cursor: 'pointer'}}>
+                            <Avatar size={50} icon={<UserOutlined/>}/>
+                        </div>
                     </div>
                 </header>
                 <section className="sales-table">

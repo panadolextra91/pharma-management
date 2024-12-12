@@ -14,6 +14,9 @@ import { Avatar, Input, Button, Upload, message } from "antd";
 import { UploadOutlined } from '@ant-design/icons';
 import logo from '../imgs/trace.svg';
 import './Profile.css';
+import AdminSidebar from "./AdminSidebar";
+import PharmacistSidebar from "./PharmacistSidebar";
+import {useNavigate} from "react-router-dom";
 //Profile.js
 //Mock data for the profile display and functionalities test
 const Profile = () => {
@@ -25,6 +28,12 @@ const Profile = () => {
         avatar: null, // Add avatar state
     });
 
+    const userRole = sessionStorage.getItem('userRole')
+
+    const navigate = useNavigate();
+    const handleAvatarClick = () => {
+        navigate('/profile');
+    }
     // Handle profile input changes
     const handleInputChange = (e) => {
         setProfile({ ...profile, [e.target.name]: e.target.value });
@@ -44,58 +53,7 @@ const Profile = () => {
     return (
         <div className="profile-container">
             {/* Sidebar Navigation */}
-            <aside className="sidebar">
-                <div className="border">
-                    <img src={logo} alt='MediMaster' className='logo-image'/>
-                    <h2>Medi<br/>Master</h2>
-                </div>
-                <div>
-                    <nav>
-                        <ul>
-                            <li>
-                                <a href="/dashboard">
-                                    <HomeOutlined/> Dashboard
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/medicines">
-                                    <MedicineBoxOutlined/> Medicines
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/categories">
-                                    <AppstoreOutlined/> Categories
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/suppliers">
-                                    <TeamOutlined/> Suppliers
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/sales-invoices">
-                                    <FileTextOutlined/> Sales & Invoices
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/reports">
-                                    <BarChartOutlined/> Reports
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/profile">
-                                    <UserOutlined/> User Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a href='/'>
-                                    <LoginOutlined/> Logout
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </aside>
+            { userRole === 'admin' ? <AdminSidebar/> : <PharmacistSidebar/>}
 
             {/* Main Content */}
             <main className="main-content">
@@ -105,7 +63,9 @@ const Profile = () => {
                         <p>Dashboard / User Profile</p>
                     </div>
                     <div className='header-right'>
+                        <div onClick={handleAvatarClick} style={{cursor: "pointer"}}>
                         <Avatar size={50} icon={<UserOutlined/>} src={profile.avatar}/>
+                        </div>
                     </div>
                 </header>
 

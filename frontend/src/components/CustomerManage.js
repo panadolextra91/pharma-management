@@ -12,8 +12,10 @@ import "./CustomerManage.css";
 import axios from "axios";
 import AddCustomerForm from './AddCustomerForm';
 import EditCustomerForm from './EditCustomerForm';
+import {useNavigate} from "react-router-dom";
 
 const CustomerManage = () => {
+    const navigate = useNavigate();
     const [customers, setCustomers] = useState([]);
     const [isAddCustomerVisible, setIsAddCustomerVisible] = useState(false);
     const [isEditCustomerVisible, setIsEditCustomerVisible] = useState(false);
@@ -25,6 +27,10 @@ const CustomerManage = () => {
     useEffect(() => {
         fetchCustomers();
     }, []);
+
+    const handleAvaterClick = () => {
+        navigate('/profile');
+    }
 
     const fetchCustomers = async () => {
         try {
@@ -158,7 +164,9 @@ const CustomerManage = () => {
                         <p>Dashboard / Customer Management</p>
                     </div>
                     <div className="header-right">
-                        <Avatar size={50} icon={<UserOutlined />} />
+                        <div onClick={handleAvaterClick} style={{cursor: 'pointer'}}>
+                            <Avatar size={50} icon={<UserOutlined />} />
+                        </div>
                     </div>
                 </header>
                 <section className="customers-table">

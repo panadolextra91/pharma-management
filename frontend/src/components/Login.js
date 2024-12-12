@@ -96,23 +96,8 @@ const Login = () => {
                         />
                     </div>
 
-                    <div className="input-group remember-me">
-                        <input
-                            type="checkbox"
-                            id="remember"
-                            checked={remember}
-                            onChange={() => setRemember(!remember)}
-                        />
-                        <label htmlFor="remember" className={remember ? 'active-label' : ''}>
-                            Remember for 30 days
-                        </label>
-                    </div>
-
                     <button type="submit" className="login-button">Sign In</button>
                 </form>
-                <p className="no-account">
-                    No account? <a href="#">Create an account</a>
-                </p>
             </div>
         </div>
     );
