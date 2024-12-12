@@ -70,3 +70,8 @@ app.use((req, res, next) => {
     console.log(`Incoming request: ${req.method} ${req.url}`);
     next();
 });
+app.use((req, res) => {
+    console.error(`Unhandled Request: ${req.method} ${req.originalUrl}`);
+    res.status(404).json({ error: 'Route not found' });
+});
+
