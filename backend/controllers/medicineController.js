@@ -51,6 +51,30 @@ exports.getMedicineById = async (req, res) => {
     }
 };
 
+//Get med by name
+exports.getMedicineByName = async (req, res) => {
+    const { name } = req.params;
+
+    try {
+        const medicines = await Medicine.findAll({
+            where: {
+                name: {
+                    [Op.like]: `%${name}%`, // Matches any part of the name
+                },
+            },
+        });
+
+        if (medicines.length === 0) {
+            return res.status(404).json({ error: 'No medicines found' });
+        }
+
+        res.status(200).json(medicines);
+    } catch (error) {
+        console.error('Error retrieving medicines by name:', error);
+        res.status(500).json({ error: 'Failed to retrieve medicines' });
+    }
+};
+
 // Create a new medicine
 exports.createMedicine = async (req, res) => {
     const { name, category_id, description, price, quantity, supplier_id, location_id, image_url, expiry_date } = req.body;

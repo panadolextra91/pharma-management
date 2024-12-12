@@ -10,6 +10,7 @@ router.get('/out-of-stock', authenticateToken, medicineController.getOutOfStockM
 
 router.get('/', authenticateToken, medicineController.getAllMedicines);
 router.get('/:id', medicineController.getMedicineById);
+router.get('/name/:name', medicineController.getMedicineByName)
 
 router.post('/', authenticateToken, authorize('admin', 'pharmacist'), medicineController.createMedicine);
 router.put('/:id', authenticateToken, authorize('admin', 'pharmacist'), medicineController.updateMedicine);

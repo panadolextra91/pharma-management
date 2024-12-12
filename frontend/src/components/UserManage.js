@@ -12,8 +12,10 @@ import AddUserForm from "./AddUserForm";
 import EditUserForm from "./EditUserForm"; // Import the EditUserForm component
 import "./UserManage.css";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 const UserManage = () => {
+    const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [isAddUserVisible, setIsAddUserVisible] = useState(false);
     const [isEditUserVisible, setIsEditUserVisible] = useState(false);
@@ -21,6 +23,9 @@ const UserManage = () => {
     const [loading, setLoading] = useState(true);
 
     const userRole = sessionStorage.getItem("userRole");
+    const handleAvaterClick = () => {
+        navigate('/profile');
+    }
 
     useEffect(() => {
         fetchUsers();
@@ -59,6 +64,7 @@ const UserManage = () => {
     };
 
     const handleEditUser = async (values) => {
+        console.log("Edit values:", values); // Log input values
         try {
             const token = sessionStorage.getItem("token");
             const response = await axios.put(
@@ -68,19 +74,28 @@ const UserManage = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            setUsers(
-                users.map((user) =>
-                    user.id === editingUser.id ? response.data : user
-                )
-            );
-            message.success("User updated successfully.");
+
+            // Extract the updated user object from the response
+            const updatedUser = response.data.user;
+            console.log("Updated User from API:", updatedUser); // Log the updated user object
+
+            // Update the state with the new user data
+            setUsers((prevUsers) => {
+                const updatedUsers = prevUsers.map((user) =>
+                    user.id === updatedUser.id ? { ...user, ...updatedUser } : user
+                );
+                console.log("Updated Users State:", updatedUsers); // Log the updated state
+                return [...updatedUsers];
+            });
+
+            message.success(response.data.message || "User updated successfully.");
             setIsEditUserVisible(false);
             setEditingUser(null);
         } catch (error) {
+            console.error("Failed to update user:", error);
             message.error("Failed to update user.");
         }
     };
-
     const handleDeleteUser = async (id) => {
         try {
             const token = sessionStorage.getItem("token");
@@ -100,14 +115,6 @@ const UserManage = () => {
     };
 
     const columns = [
-        {
-            title: "Avatar",
-            dataIndex: "avatar",
-            key: "avatar",
-            render: (avatar) => (
-                <Avatar size={40} icon={<UserOutlined />} src={avatar} />
-            ),
-        },
         {
             title: "Name",
             dataIndex: "name",
@@ -166,7 +173,9 @@ const UserManage = () => {
                         <p>Dashboard / User Management</p>
                     </div>
                     <div className="header-right">
-                        <Avatar size={50} icon={<UserOutlined />} />
+                        <div onClick={handleAvaterClick} style={{cursor: 'pointer'}}>
+                            <Avatar size={50} icon={<UserOutlined/>}/>
+                        </div>
                     </div>
                 </header>
                 <section className="users-table">

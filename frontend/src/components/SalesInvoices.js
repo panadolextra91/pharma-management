@@ -19,7 +19,7 @@ import AddInvoice from "./AddInvoice";
 import EditInvoice from "./EditInvoice";
 import AdminSidebar from "./AdminSidebar";
 import PharmacistSidebar from "./PharmacistSidebar";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 const SalesInvoices = () => {
     const navigate = useNavigate();
     const [invoices, setInvoices] = useState([]);

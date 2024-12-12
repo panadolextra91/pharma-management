@@ -21,9 +21,10 @@ import EditSupplierForm from "./EditSupplierForm";
 import axios from "axios"; // Import EditSupplierForm component
 import PharmacistSidebar from "./PharmacistSidebar";
 import AdminSidebar from "./AdminSidebar";
+import {useNavigate} from "react-router-dom";
 //Suppliers.js
 const Suppliers = () => {
-    //Mocking data for testing, we will use the true database later
+    const navigate = useNavigate();
     const [suppliers, setSuppliers] = useState([]);
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
@@ -32,6 +33,9 @@ const Suppliers = () => {
     useEffect(() => {
         fetchSuppliers();
     });
+    const handleAvaterClick = () => {
+        navigate('/profile');
+    }
 
     const userRole = sessionStorage.getItem('userRole');
 
@@ -176,7 +180,9 @@ const Suppliers = () => {
                         <p>Dashboard / Suppliers</p>
                     </div>
                     <div className='header-right'>
-                        <Avatar size={50} icon={<UserOutlined/>}/>
+                        <div onClick={handleAvaterClick} style={{cursor: 'pointer'}}>
+                            <Avatar size={50} icon={<UserOutlined/>}/>
+                        </div>
                     </div>
                 </header>
                 <section className="suppliers-table">

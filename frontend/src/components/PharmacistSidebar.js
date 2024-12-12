@@ -9,9 +9,22 @@ import {
     LoginOutlined
 } from '@ant-design/icons';
 import logo from '../imgs/trace.svg'; // Replace with the correct path to your logo file
-import './PharmacistSidebar.css'; // Optional: Import CSS for styling if needed
+import './PharmacistSidebar.css';
+import {useNavigate} from "react-router-dom"; // Optional: Import CSS for styling if needed
 
 const PharmacistSidebar = () => {
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        sessionStorage.clear();
+        localStorage.clear();
+        document.cookie.split(";").forEach((cookie) => {
+            const eqPos = cookie.indexOf("=");
+            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
+        });
+        navigate('/');
+    }
+
     return (
         <aside className="sidebar">
             <div className="border">
@@ -55,7 +68,7 @@ const PharmacistSidebar = () => {
                         </a>
                     </li>
                     <li>
-                        <a href="/">
+                        <a onClick={handleLogout} style={{cursor: "pointer"}}>
                             <LoginOutlined/> Logout
                         </a>
                     </li>

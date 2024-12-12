@@ -5,26 +5,55 @@ import {
     PlusOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { Table, Button, Space, message, Avatar, Modal } from "antd";
+import {Table, Button, Space, message, Avatar, Modal, Input} from "antd";
 import AdminSidebar from "./AdminSidebar";
 import PharmacistSidebar from "./PharmacistSidebar";
 import "./CustomerManage.css";
 import axios from "axios";
 import AddCustomerForm from './AddCustomerForm';
 import EditCustomerForm from './EditCustomerForm';
+import {useNavigate} from "react-router-dom";
 
 const CustomerManage = () => {
+    const { Search } = Input;
+    const navigate = useNavigate();
     const [customers, setCustomers] = useState([]);
     const [isAddCustomerVisible, setIsAddCustomerVisible] = useState(false);
     const [isEditCustomerVisible, setIsEditCustomerVisible] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState(null);
     const [loading, setLoading] = useState(true);
-
     const userRole = sessionStorage.getItem("userRole");
+
+    const onSearch = async (value) => {
+        const token = sessionStorage.getItem('token');
+
+        if (!value) {
+            fetchCustomers(); // Fetch all customers if the search input is cleared
+            return;
+        }
+
+        try {
+            const response = await axios.get(`http://localhost:3000/api/customers/phone/${value}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            setCustomers([response.data]); // Wrap the single customer in an array for consistency
+            message.success(`Found customer with phone number "${value}".`);
+        } catch (error) {
+            console.error('Error searching customers:', error);
+            setCustomers([]); // Clear the table if no customer is found
+            message.error(`No customer found for phone number "${value}".`);
+        }
+    };
+
 
     useEffect(() => {
         fetchCustomers();
     }, []);
+
+    const handleAvaterClick = () => {
+        navigate('/profile');
+    }
 
     const fetchCustomers = async () => {
         try {
@@ -158,19 +187,30 @@ const CustomerManage = () => {
                         <p>Dashboard / Customer Management</p>
                     </div>
                     <div className="header-right">
-                        <Avatar size={50} icon={<UserOutlined />} />
+                        <div onClick={handleAvaterClick} style={{cursor: 'pointer'}}>
+                            <Avatar size={50} icon={<UserOutlined />} />
+                        </div>
                     </div>
                 </header>
                 <section className="customers-table">
-                    <Button
-                        className="add-button"
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => setIsAddCustomerVisible(true)}
-                        style={{ marginBottom: 16 }}
-                    >
-                        Add Customer
-                    </Button>
+                    <section className="table-header">
+                        <Button
+                            className="add-button"
+                            type="primary"
+                            icon={<PlusOutlined/>}
+                            onClick={() => setIsAddCustomerVisible(true)}
+                            style={{marginBottom: 16}}
+                        >
+                            Add Customer
+                        </Button>
+                        <Search
+                            placeholder="Search customers..."
+                            allowClear
+                            onSearch={onSearch}
+                            style={{width: 500}}
+                        />
+
+                    </section>
                     <Table
                         columns={columns}
                         dataSource={customers}

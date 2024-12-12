@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Form, Input } from "antd";
+import { Modal, Form, Input, Select } from "antd";
 
 const EditUserForm = ({ visible, onEdit, onCancel, initialValues }) => {
     const [form] = Form.useForm();
@@ -13,7 +13,7 @@ const EditUserForm = ({ visible, onEdit, onCancel, initialValues }) => {
 
     return (
         <Modal
-            title="Edit User?"
+            title="Edit User"
             visible={visible}
             onCancel={onCancel}
             onOk={() => {
@@ -54,7 +54,10 @@ const EditUserForm = ({ visible, onEdit, onCancel, initialValues }) => {
                     label="Role"
                     rules={[{ required: true, message: "Please select a role" }]}
                 >
-                    <Input />
+                    <Select placeholder="Select a role">
+                        <Select.Option value="admin">Admin</Select.Option>
+                        <Select.Option value="pharmacist">Pharmacist</Select.Option>
+                    </Select>
                 </Form.Item>
             </Form>
         </Modal>
