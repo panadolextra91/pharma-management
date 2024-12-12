@@ -11,6 +11,7 @@ exports.getAllMedicines = async (req, res) => {
             SELECT 
                 medicines.id,
                 medicines.name,
+                medicines.description,
                 medicines.price,
                 medicines.quantity,
                 medicines.expiry_date,

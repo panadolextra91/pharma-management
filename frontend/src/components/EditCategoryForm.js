@@ -1,12 +1,13 @@
-import React, {useEffect} from "react";
-import {Modal, Form, Input, Button} from "antd";
-//EditCategoryForm.js
-const EditCategoryForm = ({visible, onEdit, onCancel, category}) => {
+import React, { useEffect } from "react";
+import { Modal, Form, Input } from "antd";
+
+const EditCategoryForm = ({ visible, onEdit, onCancel, category }) => {
     const [form] = Form.useForm();
+
     useEffect(() => {
         if (category) {
-            form.setFieldValue({
-                category: category.category,
+            form.setFieldsValue({
+                name: category.category,
                 des: category.des
             });
         }
@@ -38,14 +39,9 @@ const EditCategoryForm = ({visible, onEdit, onCancel, category}) => {
                 name="edit_category_form"
             >
                 <Form.Item
-                    name="category"
+                    name="name"
                     label="Category Name"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please enter the category name!',
-                        },
-                    ]}
+                    rules={[{ required: true, message: 'Please enter the category name!' }]}
                 >
                     <Input placeholder="Enter category name" />
                 </Form.Item>

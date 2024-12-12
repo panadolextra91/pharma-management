@@ -5,7 +5,7 @@ import moment from 'moment';
 
 const { Option } = Select;
 
-const EditMedicineForm = ({ visible, onEdit, onCancel, medicine }) => {
+const EditMedicineForm = ({ visible, onEdit, onCancel, medicine, suppliers, locations }) => {
     const [form] = Form.useForm();
 
     // Populate the form with the selected medicine’s data
@@ -16,7 +16,7 @@ const EditMedicineForm = ({ visible, onEdit, onCancel, medicine }) => {
                 expirationDate: medicine.expiry_date ? moment(medicine.expiry_date) : null,
                 supplier: medicine.supplier || '',
                 location: medicine.location || '',
-                category: medicine.category || ''
+                category: medicine.category || '',
             });
         }
     }, [medicine, form]);
@@ -62,11 +62,29 @@ const EditMedicineForm = ({ visible, onEdit, onCancel, medicine }) => {
                 <Form.Item name="quantity" label="Quantity" rules={[{ required: true, message: 'Please input the quantity!' }]}>
                     <Input placeholder="Enter the quantity" />
                 </Form.Item>
-                <Form.Item name="supplier" label="Supplier" rules={[{ required: true, message: 'Please enter supplier information!' }]}>
+                {/* <Form.Item name="supplier" label="Supplier" rules={[{ required: true, message: 'Please enter supplier information!' }]}>
                     <Input placeholder="Enter supplier" />
                 </Form.Item>
                 <Form.Item name="location" label="Location" rules={[{ required: true, message: 'Please enter location information!' }]}>
                     <Input placeholder="Enter location" />
+                </Form.Item> */}
+                <Form.Item name="supplier" label="Supplier" rules={[{ required: true, message: 'Please select a supplier!' }]}>
+                    <Select placeholder="Select a supplier">
+                        {suppliers.map((supplier) => (
+                            <Option key={supplier.id} value={supplier.name}>
+                                {supplier.name}
+                            </Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+                <Form.Item name="location" label="Location" rules={[{ required: true, message: 'Please select a location!' }]}>
+                    <Select placeholder="Select a location">
+                        {locations.map((location) => (
+                            <Option key={location.id} value={location.name}>
+                                {location.name}
+                            </Option>
+                        ))}
+                    </Select>
                 </Form.Item>
                 <Form.Item name="expirationDate" label="Expiration Date" rules={[{ required: true, message: 'Please select the expiration date!' }]}>
                     <DatePicker style={{ width: '100%' }} />

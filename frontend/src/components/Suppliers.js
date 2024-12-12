@@ -70,21 +70,48 @@ const Suppliers = () => {
         setIsEditModalVisible(true);
     };
 
-    const handleAddSupplier = (values) => {
-        const newSupplier = {
-            key: suppliers.length + 1,
-            ...values,
-        };
-        setSuppliers([...suppliers, newSupplier]);
-        setIsAddModalVisible(false);
+    const handleAddSupplier = async (values) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const response = await axios.post('http://localhost:3000/api/suppliers', values, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setSuppliers([...suppliers, response.data]);
+            message.success("Supplier added successfully.");
+            setIsAddModalVisible(false);
+        } catch (error) {
+            message.error("Failed to add supplier.");
+        }
     };
 
-    const handleEditSupplier = (values) => {
-        const updatedSuppliers = suppliers.map(supplier =>
-            supplier.key === currentSupplier.key ? { ...supplier, ...values } : supplier
-        );
-        setSuppliers(updatedSuppliers);
-        setIsEditModalVisible(false);
+    const handleEditSupplier = async (values) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            const payload = {
+                id: currentSupplier.key,
+                name: values.name,
+                contact_info: values.contact_info,
+                address: values.address,
+            };
+    
+            const response = await axios.put(
+                `http://localhost:3000/api/suppliers/${payload.id}`,
+                payload,
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+    
+            const updatedValues = suppliers.map(sup =>
+                sup.id === payload.id ? { ...sup, ...response.data } : sup
+            );
+            setSuppliers(updatedValues);
+            message.success("Supplier updated successfully.");
+            setIsEditModalVisible(false);
+        } catch (error) {
+            console.error("Error updating medicine:", error);
+            message.error("Failed to update supplier. Please try again.");
+        }
     };
 
     const handleCancelAdd = () => {
@@ -95,9 +122,17 @@ const Suppliers = () => {
         setIsEditModalVisible(false);
     };
 
-    const deleteSupplier = (key) => {
-        const updatedSuppliers = suppliers.filter(supplier => supplier.key !== key);
-        setSuppliers(updatedSuppliers);
+    const deleteSupplier = async (id) => {
+        try {
+            const token = sessionStorage.getItem('token');
+            await axios.delete(`http://localhost:3000/api/suppliers/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setSuppliers(suppliers.filter(supplier => supplier.id !== id));
+            message.success("Supplier deleted successfully.");
+        } catch (error) {
+            message.error("Failed to delete supplier.");
+        }
     };
 
     const columns = [

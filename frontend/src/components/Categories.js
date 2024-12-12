@@ -60,16 +60,39 @@ const Categories = () => {
         setIsEditModalVisible(true);
     };
 
+    // const handleEditCategory = async (values) => {
+    //     try {
+    //         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    //         await axios.put(`http://localhost:3000/api/categories/${currentCategory.key}`, values, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`
+    //             }
+    //         });
+    //         message.success('Category updated successfully');
+    //         fetchCategories(); // Refresh the list
+    //         setIsEditModalVisible(false);
+    //     } catch (error) {
+    //         console.error('Error updating category:', error);
+    //         message.error('Failed to update category');
+    //     }
+    // };
+
+    
+
     const handleEditCategory = async (values) => {
         try {
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            await axios.put(`http://localhost:3000/api/categories/${currentCategory.key}`, values, {
+            const payload = {
+                name: values.name,
+                description: values.des
+            };
+            await axios.put(`http://localhost:3000/api/categories/${currentCategory.key}`, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             message.success('Category updated successfully');
-            fetchCategories(); // Refresh the list
+            fetchCategories();
             setIsEditModalVisible(false);
         } catch (error) {
             console.error('Error updating category:', error);
@@ -80,6 +103,7 @@ const Categories = () => {
     const handleCancelEdit = () => {
         setIsEditModalVisible(false);
     };
+    
 
     const deleteCategory = async (key) => {
         try {
@@ -114,7 +138,7 @@ const Categories = () => {
             render: (text, record) => (
                 <Space size="middle">
                     <Button icon={<EditOutlined />} style={{ borderRadius: 50 }} onClick={() => showEditCategoryModal(record.key)}>Edit</Button>
-                    <Button icon={<DeleteOutlined />} style={{ borderRadius: 50 }} danger onClick={() => deleteCategory(record.key)}>Delete</Button>
+                    {/* <Button icon={<DeleteOutlined />} style={{ borderRadius: 50 }} danger onClick={() => deleteCategory(record.key)}>Delete</Button> */}
                 </Space>
             )
         }

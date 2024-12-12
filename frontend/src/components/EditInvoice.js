@@ -7,12 +7,26 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
     const [form] = Form.useForm();
     const [items, setItems] = useState(invoice ? invoice.items : []);
 
+    // useEffect(() => {
+    //     if (invoice) {
+    //         form.setFieldsValue(invoice);
+    //         setItems(invoice.items);
+    //     }
+    // }, [invoice, form]);
+
     useEffect(() => {
         if (invoice) {
+            const sanitizedItems = invoice.items.map((item, index) => ({
+                ...item,
+                key: item.key || index, // Đảm bảo mỗi item có `key`
+                price: Number(item.price), // Chuyển đổi `price` thành số
+                total: item.quantity * Number(item.price), // Tính lại `total`
+            }));
             form.setFieldsValue(invoice);
-            setItems(invoice.items);
+            setItems(sanitizedItems);
         }
     }, [invoice, form]);
+    
 
     const handleSave = () => {
         form.validateFields().then((values) => {
@@ -21,9 +35,25 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
     };
 
 
+    // const handleItemChange = (key, value, field) => {
+    //     const updatedItems = items.map((item) =>
+    //         item.key === key ? { ...item, [field]: value } : item
+    //     );
+    //     setItems(updatedItems);
+    // };
+
     const handleItemChange = (key, value, field) => {
         const updatedItems = items.map((item) =>
-            item.key === key ? { ...item, [field]: value } : item
+            item.key === key
+                ? {
+                      ...item,
+                      [field]: field === 'quantity' ? Number(value) : item[field],
+                      total:
+                          field === 'quantity'
+                              ? Number(value) * item.price
+                              : item.quantity * Number(value),
+                  }
+                : item
         );
         setItems(updatedItems);
     };

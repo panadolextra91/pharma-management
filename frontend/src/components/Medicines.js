@@ -20,6 +20,7 @@ import AddMedicineForm from "./AddMedicineForm";
 import EditMedicineForm from "./EditMedicineForm";
 import AdminSidebar from "./AdminSidebar";
 import PharmacistSidebar from "./PharmacistSidebar";
+import moment from "moment";
 
 const Medicines = () => {
     const LOW_STOCK_THRESHOLD = 20;
@@ -115,12 +116,56 @@ const Medicines = () => {
         }
     };
 
-    const handleEditMedicine = (updatedMedicine) => {
-        const updatedMedicines = medicines.map((medicine) =>
-            medicine.id === updatedMedicine.id ? updatedMedicine : medicine
-        );
-        setMedicines(updatedMedicines);
-        setIsEditModalVisible(false);
+    const handleEditMedicine = async (updatedMedicine) => {
+        try {
+            const token = sessionStorage.getItem('token');
+
+            // Map the current values to their respective IDs
+            const category = categories.find(cat => cat.name === updatedMedicine.category);
+            const supplier = suppliers.find(sup => sup.name === updatedMedicine.supplier);
+            const location = locations.find(loc => loc.name === updatedMedicine.location);
+    
+            // Validate that the mapping worked
+            if (!category || !supplier || !location) {
+                message.error("Invalid category, supplier, or location.");
+                return;
+            }
+    
+            // Prepare the payload for the API
+            const payload = {
+                name: updatedMedicine.name,
+                category_id: category.id,
+                description: updatedMedicine.description,
+                price: updatedMedicine.price,
+                quantity: updatedMedicine.quantity,
+                supplier_id: supplier.id,
+                location_id: location.id,
+                expiry_date: updatedMedicine.expirationDate
+                    ? moment(updatedMedicine.expirationDate).format('YYYY-MM-DD')
+                    : null,
+            };
+    
+            // Send the update request to the API
+            const response = await axios.put(
+                `http://localhost:3000/api/medicines/${updatedMedicine.id}`,
+                payload,
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+    
+            // Update the local state with the response data
+            const updatedMedicines = medicines.map(med =>
+                med.id === updatedMedicine.id ? { ...med, ...response.data } : med
+            );
+            setMedicines(updatedMedicines);
+    
+            message.success("Medicine updated successfully.");
+            setIsEditModalVisible(false);
+        } catch (error) {
+            console.error("Error updating medicine:", error);
+            message.error("Failed to update medicine. Please try again.");
+        }
     };
 
     const handleCancel = () => {
@@ -233,7 +278,7 @@ const Medicines = () => {
                     <Table columns={columns} dataSource={medicines} loading={loading} />
                 </section>
                 <AddMedicineForm visible={isAddModalVisible} onCreate={handleAddMedicine} onCancel={handleCancel} categories={categories} suppliers={suppliers} locations={locations} />
-                <EditMedicineForm visible={isEditModalVisible} onEdit={handleEditMedicine} onCancel={handleCancel} medicine={editingMedicine} />
+                <EditMedicineForm visible={isEditModalVisible} onEdit={handleEditMedicine} onCancel={handleCancel} medicine={editingMedicine} suppliers={suppliers} locations={locations} />
             </main>
         </div>
     );
