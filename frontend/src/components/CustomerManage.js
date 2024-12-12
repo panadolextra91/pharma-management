@@ -5,7 +5,7 @@ import {
     PlusOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { Table, Button, Space, message, Avatar, Modal } from "antd";
+import {Table, Button, Space, message, Avatar, Modal, Input} from "antd";
 import AdminSidebar from "./AdminSidebar";
 import PharmacistSidebar from "./PharmacistSidebar";
 import "./CustomerManage.css";
@@ -15,14 +15,35 @@ import EditCustomerForm from './EditCustomerForm';
 import {useNavigate} from "react-router-dom";
 
 const CustomerManage = () => {
+    const { Search } = Input;
     const navigate = useNavigate();
     const [customers, setCustomers] = useState([]);
     const [isAddCustomerVisible, setIsAddCustomerVisible] = useState(false);
     const [isEditCustomerVisible, setIsEditCustomerVisible] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState(null);
     const [loading, setLoading] = useState(true);
-
     const userRole = sessionStorage.getItem("userRole");
+
+    const onSearch = async (value) => {
+        const token = sessionStorage.getItem('token');
+
+        if (!value) {
+            fetchCustomers(); // Fetch all medicines if search is cleared
+            return;
+        }
+
+        try {
+            const response = await axios.get(`http://localhost:3000/api/customers/phone/${value}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            setCustomers(response.data); // Update with multiple results
+            message.success(`Found ${response.data.length} result(s) for "${value}".`);
+        } catch (error) {
+            console.error('Error searching customers:', error);
+            message.error(`No customers found for "${value}".`);
+        }
+    };
 
     useEffect(() => {
         fetchCustomers();
@@ -170,15 +191,24 @@ const CustomerManage = () => {
                     </div>
                 </header>
                 <section className="customers-table">
-                    <Button
-                        className="add-button"
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => setIsAddCustomerVisible(true)}
-                        style={{ marginBottom: 16 }}
-                    >
-                        Add Customer
-                    </Button>
+                    <section className="table-header">
+                        <Button
+                            className="add-button"
+                            type="primary"
+                            icon={<PlusOutlined/>}
+                            onClick={() => setIsAddCustomerVisible(true)}
+                            style={{marginBottom: 16}}
+                        >
+                            Add Customer
+                        </Button>
+                        <Search
+                            placeholder="Search customers..."
+                            allowClear
+                            onSearch={onSearch}
+                            style={{width: 500}}
+                        />
+
+                    </section>
                     <Table
                         columns={columns}
                         dataSource={customers}

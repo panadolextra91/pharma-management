@@ -106,14 +106,6 @@ const UserManage = () => {
 
     const columns = [
         {
-            title: "Avatar",
-            dataIndex: "avatar",
-            key: "avatar",
-            render: (avatar) => (
-                <Avatar size={40} icon={<UserOutlined />} src={avatar} />
-            ),
-        },
-        {
             title: "Name",
             dataIndex: "name",
             key: "name",

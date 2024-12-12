@@ -62,7 +62,7 @@ exports.getCustomerById = async (req, res) => {
 exports.getCustomerByPhone = async (req, res) => {
     const { phone } = req.params;
     try {
-        const customer = await Customer.findOne({ where: { phone } });
+        const customer = await Customer.findAll({ where: { phone } });
         if (!customer) {
             return res.status(404).json({ error: "Customer not found" });
         }

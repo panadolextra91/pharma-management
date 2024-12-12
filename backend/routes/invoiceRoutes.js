@@ -12,7 +12,8 @@ router.get('/:id', authenticateToken, authorize('admin', 'pharmacist'), invoiceC
 router.post('/', authenticateToken, authorize('admin', 'pharmacist'), invoiceController.createInvoice);
 router.put('/:id', authenticateToken, authorize('admin', 'pharmacist'), invoiceController.updateInvoice);
 router.delete('/:id', authenticateToken, authorize('admin', 'pharmacist'), invoiceController.deleteInvoice);
-
+router.get('/revenue/monthly', authenticateToken, authorize('admin', 'pharmacist'), invoiceController.getMonthlyRevenue);
+//router.get('/sales/selling-medicines', authenticateToken, authorize('admin', 'pharmacist'), invoiceController.getSellingMedicines);
 router.get('/sales', authenticateToken, authorize('admin', 'pharmacist'), async (req, res) => {
     try {
         const sales = await Invoice.findAll({
