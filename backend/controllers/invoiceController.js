@@ -1,7 +1,7 @@
-
 //invoiceController.js
 const { Invoice, InvoiceItem, Medicine, Customer } = require('../models'); // Ensure models are imported
-
+const { Op } = require('sequelize');
+const sequelize = require('../config/database');
 // Helper function to recalculate total amount
 const recalculateInvoiceTotal = async (invoice_id) => {
     const invoiceItems = await InvoiceItem.findAll({ where: { invoice_id } });
@@ -33,8 +33,6 @@ exports.getAllInvoices = async (req, res) => {
     }
 };
 
-
-
 // Get a single invoice by ID
 exports.getInvoiceById = async (req, res) => {
     const { id } = req.params;
@@ -61,8 +59,6 @@ exports.getInvoiceById = async (req, res) => {
     }
 };
 
-
-// Create a new invoice and its items
 // Create a new invoice and its items
 exports.createInvoice = async (req, res) => {
     const { invoice_date, type, items, customer_id } = req.body;
@@ -108,8 +104,6 @@ exports.createInvoice = async (req, res) => {
     }
 };
 
-
-
 // Update an invoice and its items
 exports.updateInvoice = async (req, res) => {
     const { id } = req.params;
@@ -154,7 +148,6 @@ exports.updateInvoice = async (req, res) => {
     }
 };
 
-
 // Delete an invoice and its items
 exports.deleteInvoice = async (req, res) => {
     const { id } = req.params;
@@ -178,3 +171,80 @@ exports.deleteInvoice = async (req, res) => {
     }
 };
 
+//get monthly rev
+exports.getMonthlyRevenue = async (req, res) => {
+    try {
+        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+
+        //fetch income from sales and outcome from purchases
+        const income = await Invoice.sum('total_amount', {
+            where: {
+                type: 'sale',
+                invoice_date: { [Op.between]: [startOfMonth, endOfMonth] },
+            },
+        });
+
+        const outcome = await Invoice.sum('total_amount', {
+            where: {
+                type: 'purchase',
+                invoice_date: { [Op.between]: [startOfMonth, endOfMonth] },
+            },
+        });
+
+        res.status(200).json({
+            income: income || 0,
+            outcome: outcome || 0,
+            total: (income || 0) - (outcome || 0),
+        });
+    } catch (error) {
+        console.log('Error calculating monthly revenue', error);
+        res.status(500).json({ error: 'Failed to calculate revenue' });
+    }
+};
+
+//get sales data for month and today
+/*exports.getSellingMedicines = async (req, res) => {
+    try {
+        const today = new Date();
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+
+        // Fetch sales for the month
+        const monthlySales = await InvoiceItem.findAll({
+            attributes: [
+                'medicine_id',
+                [sequelize.fn('SUM', sequelize.col('InvoiceItem.quantity')), 'total_quantity'], // Qualify the column
+            ],
+            include: [{ model: Medicine, as: 'medicine', attributes: ['name'] }], // Use correct alias
+            where: {
+                createdAt: { [Op.between]: [startOfMonth, new Date()] },
+            },
+            group: ['InvoiceItem.medicine_id'], // Qualify the group by
+            order: [[sequelize.fn('SUM', sequelize.col('InvoiceItem.quantity')), 'DESC']], // Qualify the column in order
+        });
+
+        // Fetch sales for today
+        const dailySales = await InvoiceItem.findAll({
+            attributes: [
+                'medicine_id',
+                [sequelize.fn('SUM', sequelize.col('InvoiceItem.quantity')), 'total_quantity'], // Qualify the column
+            ],
+            include: [{ model: Medicine, as: 'medicine', attributes: ['name'] }], // Use correct alias
+            where: {
+                createdAt: { [Op.between]: [startOfDay, new Date()] },
+            },
+            group: ['InvoiceItem.medicine_id'], // Qualify the group by
+            order: [[sequelize.fn('SUM', sequelize.col('InvoiceItem.quantity')), 'DESC']], // Qualify the column in order
+        });
+
+        res.status(200).json({
+            monthlySales,
+            dailySales,
+            mostPurchased: monthlySales[0] || null, // Highlight the most purchased medicine
+        });
+    } catch (error) {
+        console.error('Error fetching selling medicines data:', error);
+        res.status(500).json({ error: 'Failed to fetch selling medicines data' });
+    }
+};*/

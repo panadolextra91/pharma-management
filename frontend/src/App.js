@@ -12,6 +12,7 @@ import AdminSidebar from './components/AdminSidebar';
 import PharmacistSidebar from './components/PharmacistSidebar';
 import UserManage from "./components/UserManage";
 import CustomerManage from "./components/CustomerManage";
+import ForgotPassword from "./components/ForgotPassword";
 function App() {
     const ProtectedRoute = ({ children, role }) => {
         const storedRole =
@@ -66,6 +67,7 @@ function App() {
                 <Route path='/profile' element={<Profile />} />
                 <Route path='/users-manage' element={<UserManage/>}/>
                 <Route path='/customers-manage' element={<CustomerManage/>}/>
+                <Route path='/forgot-password' element={<ForgotPassword/>}/>
             </Routes>
         </Router>
     );

@@ -17,8 +17,10 @@ import './Categories.css';
 import EditCategoryForm from "./EditCategoryForm";
 import PharmacistSidebar from "./PharmacistSidebar";
 import AdminSidebar from "./AdminSidebar";
+import {useNavigate} from "react-router-dom";
 
 const Categories = () => {
+    const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
     const [currentCategory, setCurrentCategory] = useState(null);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
@@ -27,6 +29,10 @@ const Categories = () => {
     useEffect(() => {
         fetchCategories();
     }, []);
+
+    const handleAvatarClick = () => {
+        navigate('/profile');
+    };
 
     const userRole = sessionStorage.getItem('userRole')
 
@@ -157,7 +163,9 @@ const Categories = () => {
                         <p>Dashboard / Categories</p>
                     </div>
                     <div className='header-right'>
-                        <Avatar size={50} icon={<UserOutlined/>}/>
+                        <div onClick={handleAvatarClick} style={{cursor: 'pointer'}}>
+                            <Avatar size={50} icon={<UserOutlined/>}/>
+                        </div>
                     </div>
                 </header>
                 <section className="categories-table">

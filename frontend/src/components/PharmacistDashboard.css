@@ -129,3 +129,12 @@
   border-radius: 8px;
   border: 1px dashed #cbd5e1;
 }
+
+.revenue-section {
+  margin: 16px;
+}
+
+.revenue-section .ant-card {
+  margin-bottom: 16px;
+}
+

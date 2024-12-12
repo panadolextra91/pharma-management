@@ -70,3 +70,6 @@ app.use((req, res, next) => {
     console.log(`Incoming request: ${req.method} ${req.url}`);
     next();
 });
+
+app.use(express.json()); // To parse JSON requests
+app.use(express.urlencoded({ extended: true })); // To parse URL-encoded requests

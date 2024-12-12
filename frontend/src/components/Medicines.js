@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
-    HomeOutlined,
-    MedicineBoxOutlined,
-    AppstoreOutlined,
-    TeamOutlined,
-    FileTextOutlined,
-    BarChartOutlined,
     UserOutlined,
-    LoginOutlined,
     EditOutlined,
     DeleteOutlined,
     PlusOutlined
 } from '@ant-design/icons';
-import { Avatar, Button, Space, Table, Tag, Tooltip, message } from "antd";
+import {Avatar, Button, Space, Table, Tag, Tooltip, message, Input} from "antd";
 import axios from "axios";
 import logo from '../imgs/trace.svg';
 import './Medicines.css';
@@ -21,9 +14,12 @@ import EditMedicineForm from "./EditMedicineForm";
 import AdminSidebar from "./AdminSidebar";
 import PharmacistSidebar from "./PharmacistSidebar";
 import moment from "moment";
+import {useNavigate} from "react-router-dom";
 
 const Medicines = () => {
+    const { Search } = Input;
     const LOW_STOCK_THRESHOLD = 20;
+    const navigate = useNavigate();
     const [medicines, setMedicines] = useState([]);
     const [categories, setCategories] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
@@ -33,6 +29,29 @@ const Medicines = () => {
     const [editingMedicine, setEditingMedicine] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const onSearch = async (value) => {
+        const token = sessionStorage.getItem('token');
+
+        if (!value) {
+            fetchMedicines(); // Fetch all medicines if search is cleared
+            return;
+        }
+
+        try {
+            const response = await axios.get(`http://localhost:3000/api/medicines/name/${value}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            setMedicines(response.data); // Update with multiple results
+            message.success(`Found ${response.data.length} result(s) for "${value}".`);
+        } catch (error) {
+            console.error('Error searching medicines:', error);
+            message.error(`No medicines found for "${value}".`);
+        }
+    };
+
+
+
     useEffect(() => {
         fetchMedicines();
         fetchCategories();
@@ -40,6 +59,9 @@ const Medicines = () => {
         fetchLocations();
     }, []);
 
+    const handleAvaterClick = () => {
+        navigate('/profile');
+    }
     const role = sessionStorage.getItem('userRole');
 
     const fetchMedicines = async () => {
@@ -268,17 +290,36 @@ const Medicines = () => {
                         <p>Dashboard / Medicines</p>
                     </div>
                     <div className='header-right'>
-                        <Avatar size={50} icon={<UserOutlined />} />
+                        <div onClick={handleAvaterClick} style={{cursor: 'pointer'}}>
+                            <Avatar size={50} icon={<UserOutlined/>}/>
+                        </div>
                     </div>
                 </header>
+
                 <section className="medicines-table">
-                    <Button className='add-button' type="primary" icon={<PlusOutlined />} onClick={showAddMedicineModal} style={{ marginBottom: 16, borderRadius: 50 }}>
-                        Add Medicine
-                    </Button>
-                    <Table columns={columns} dataSource={medicines} loading={loading} />
+                    <section className="table-header">
+                        <Button
+                            className="add-button"
+                            type="primary"
+                            icon={<PlusOutlined/>}
+                            onClick={showAddMedicineModal}
+                        >
+                            Add Medicine
+                        </Button>
+                        <Search
+                            placeholder="Search medicines..."
+                            allowClear
+                            onSearch={onSearch}
+                            style={{ width: 500}}
+                        />
+
+                    </section>
+                    <Table columns={columns} dataSource={medicines} loading={loading}/>
                 </section>
-                <AddMedicineForm visible={isAddModalVisible} onCreate={handleAddMedicine} onCancel={handleCancel} categories={categories} suppliers={suppliers} locations={locations} />
-                <EditMedicineForm visible={isEditModalVisible} onEdit={handleEditMedicine} onCancel={handleCancel} medicine={editingMedicine} suppliers={suppliers} locations={locations} />
+                <AddMedicineForm visible={isAddModalVisible} onCreate={handleAddMedicine} onCancel={handleCancel}
+                                 categories={categories} suppliers={suppliers} locations={locations}/>
+                <EditMedicineForm visible={isEditModalVisible} onEdit={handleEditMedicine} onCancel={handleCancel}
+                                  medicine={editingMedicine} suppliers={suppliers} locations={locations}/>
             </main>
         </div>
     );
