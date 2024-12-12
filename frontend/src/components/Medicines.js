@@ -31,22 +31,25 @@ const Medicines = () => {
 
     const onSearch = async (value) => {
         const token = sessionStorage.getItem('token');
+
         if (!value) {
-            //ko search thi reset table
-            fetchMedicines();
+            fetchMedicines(); // Fetch all medicines if search is cleared
             return;
         }
+
         try {
             const response = await axios.get(`http://localhost:3000/api/medicines/name/${value}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setMedicines([response.data]);
-            message.success(`Medicine "${value}" found.`);
+
+            setMedicines(response.data); // Update with multiple results
+            message.success(`Found ${response.data.length} result(s) for "${value}".`);
         } catch (error) {
-            console.error('Error fetching medicine by name:', error);
-            message.error(`No medicine found with the name "${value}".`);
+            console.error('Error searching medicines:', error);
+            message.error(`No medicines found for "${value}".`);
         }
     };
+
 
 
     useEffect(() => {

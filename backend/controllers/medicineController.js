@@ -54,25 +54,26 @@ exports.getMedicineById = async (req, res) => {
 //Get med by name
 exports.getMedicineByName = async (req, res) => {
     const { name } = req.params;
-    console.log('Name parameter received:', req.params.name); // Debugging
 
     try {
-        const medicine = await Medicine.findOne({ where: { name } })
-        console.log('Query result:', medicine);
+        const medicines = await Medicine.findAll({
+            where: {
+                name: {
+                    [Op.like]: `%${name}%`, // Matches any part of the name
+                },
+            },
+        });
 
-
-        if (!medicine) {
-            return res.status(404).json({ error: 'Medicine not found' });
+        if (medicines.length === 0) {
+            return res.status(404).json({ error: 'No medicines found' });
         }
 
-        res.status(200).json(medicine);
+        res.status(200).json(medicines);
     } catch (error) {
-        console.error('Error retrieving medicine:', error);
-        res.status(500).json({ error: 'Failed to retrieve medicine' });
+        console.error('Error retrieving medicines by name:', error);
+        res.status(500).json({ error: 'Failed to retrieve medicines' });
     }
 };
-
-
 
 // Create a new medicine
 exports.createMedicine = async (req, res) => {
