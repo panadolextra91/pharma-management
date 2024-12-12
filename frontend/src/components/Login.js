@@ -82,7 +82,7 @@ const Login = () => {
                             prefix={<UserOutlined />}
                         />
                     </div>
-                    <a href="#" className="forgot-password">Forgot Password?</a>
+                    <a href="/forgot-password" className="forgot-password">Forgot Password?</a>
                     <div className="input-group">
                         <label htmlFor="password">Password</label>
                         <Input

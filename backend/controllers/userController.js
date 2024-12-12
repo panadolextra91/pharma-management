@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken'); // Make sure this line is present
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 //userController.js
 // Get all users
 exports.getAllUsers = async (req, res) => {
@@ -126,5 +128,54 @@ exports.changePassword = async (req, res) => {
     } catch (error) {
         console.error('Error changing password:', error);
         res.status(500).json({ error: 'Failed to change password' });
+    }
+};
+
+//forgot password
+exports.forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        // Validate email
+        if (!email || !/\S+@\S+\.\S+/.test(email)) {
+            return res.status(400).json({ error: 'A valid email is required' });
+        }
+
+        // Find user by email
+        const user = await User.findOne({ where: { email } });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Generate a random secure password
+        const newPassword = crypto.randomBytes(8).toString('hex'); // 16-character password
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the user's password in the database
+        await user.update({ password: hashedPassword });
+
+        // Configure the nodemailer transporter
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'webappanhthu@gmail.com',
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+
+        // Send the email
+        await transporter.sendMail({
+            from: '"MediMaster" <webappanhthu@gmail.com>',
+            to: user.email,
+            subject: 'Password Reset',
+            text: `Your new password is: ${newPassword}`,
+        });
+
+        res.status(200).json({ message: 'A new password has been sent to your email.' });
+    } catch (error) {
+        console.error('Error in forgotPassword:', error.message || error);
+        res.status(500).json({ error: 'Failed to process password reset request.' });
     }
 };
