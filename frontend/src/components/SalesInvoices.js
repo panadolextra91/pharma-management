@@ -77,11 +77,15 @@ const SalesInvoices = () => {
     };
 
     // Handle the deletion of an invoice
-    const deleteInvoice = async (key) => {
+    const deleteInvoice = async (id) => {  
         try {
-            await axios.delete(`http://localhost:3000/api/invoices/${key}`);
+            const token = sessionStorage.getItem('token');
+            await axios.delete(`http://localhost:3000/api/invoices/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setInvoices(invoices.filter(invoice => invoice.id !== id));
             message.success('Invoice deleted successfully');
-            fetchInvoices(); // Refresh the list
+            fetchInvoices();
         } catch (error) {
             console.error('Error deleting invoice:', error);
             message.error('Failed to delete invoice');
