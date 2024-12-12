@@ -28,7 +28,7 @@ const CustomerManage = () => {
         const token = sessionStorage.getItem('token');
 
         if (!value) {
-            fetchCustomers(); // Fetch all medicines if search is cleared
+            fetchCustomers(); // Fetch all customers if the search input is cleared
             return;
         }
 
@@ -37,13 +37,15 @@ const CustomerManage = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            setCustomers(response.data); // Update with multiple results
-            message.success(`Found ${response.data.length} result(s) for "${value}".`);
+            setCustomers([response.data]); // Wrap the single customer in an array for consistency
+            message.success(`Found customer with phone number "${value}".`);
         } catch (error) {
             console.error('Error searching customers:', error);
-            message.error(`No customers found for "${value}".`);
+            setCustomers([]); // Clear the table if no customer is found
+            message.error(`No customer found for phone number "${value}".`);
         }
     };
+
 
     useEffect(() => {
         fetchCustomers();

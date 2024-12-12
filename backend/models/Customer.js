@@ -18,6 +18,7 @@ Customer.init(
         phone: {
             type: DataTypes.STRING,
             allowNull: true,
+            unique: true,
         },
         email: {
             type: DataTypes.STRING,
