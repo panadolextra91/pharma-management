@@ -64,6 +64,7 @@ const UserManage = () => {
     };
 
     const handleEditUser = async (values) => {
+        console.log("Edit values:", values); // Log input values
         try {
             const token = sessionStorage.getItem("token");
             const response = await axios.put(
@@ -73,19 +74,28 @@ const UserManage = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            setUsers(
-                users.map((user) =>
-                    user.id === editingUser.id ? response.data : user
-                )
-            );
-            message.success("User updated successfully.");
+
+            // Extract the updated user object from the response
+            const updatedUser = response.data.user;
+            console.log("Updated User from API:", updatedUser); // Log the updated user object
+
+            // Update the state with the new user data
+            setUsers((prevUsers) => {
+                const updatedUsers = prevUsers.map((user) =>
+                    user.id === updatedUser.id ? { ...user, ...updatedUser } : user
+                );
+                console.log("Updated Users State:", updatedUsers); // Log the updated state
+                return [...updatedUsers];
+            });
+
+            message.success(response.data.message || "User updated successfully.");
             setIsEditUserVisible(false);
             setEditingUser(null);
         } catch (error) {
+            console.error("Failed to update user:", error);
             message.error("Failed to update user.");
         }
     };
-
     const handleDeleteUser = async (id) => {
         try {
             const token = sessionStorage.getItem("token");

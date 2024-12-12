@@ -1,14 +1,18 @@
 import React from "react";
-import { Modal, Form, Input } from "antd";
+import { Modal, Form, Input, Select } from "antd";
 
 const AddUserForm = ({ visible, onCreate, onCancel }) => {
     const [form] = Form.useForm();
 
     return (
         <Modal
-            title="Add User?"
+            title="Add User"
             visible={visible}
-            onCancel={onCancel}
+            onCancel={() => {
+                form.resetFields();
+                onCancel();
+            }}
+
             onOk={() => {
                 form.validateFields()
                     .then((values) => {
@@ -21,6 +25,22 @@ const AddUserForm = ({ visible, onCreate, onCancel }) => {
             }}
         >
             <Form form={form} layout="vertical">
+                <Form.Item
+                    name="username"
+                    label="Username"
+                    rules={[{ required: true, message: "Please enter username" }]}
+                >
+                    <Input/>
+                </Form.Item>
+
+                <Form.Item
+                    name="password"
+                    label="Password"
+                    rules={[{ required: true, message: "Please enter a password" }]}
+                >
+                    <Input.Password />
+                </Form.Item>
+
                 <Form.Item
                     name="name"
                     label="Name"
@@ -46,7 +66,10 @@ const AddUserForm = ({ visible, onCreate, onCancel }) => {
                     label="Role"
                     rules={[{ required: true, message: "Please select a role" }]}
                 >
-                    <Input />
+                    <Select placeholder="Select a role">
+                        <Select.Option value="admin">Admin</Select.Option>
+                        <Select.Option value="pharmacist">Pharmacist</Select.Option>
+                    </Select>
                 </Form.Item>
             </Form>
         </Modal>

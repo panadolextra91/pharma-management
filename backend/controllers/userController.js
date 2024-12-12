@@ -17,11 +17,10 @@ exports.getAllUsers = async (req, res) => {
 // Create a new user
 exports.createUser = async (req, res) => {
     const { username, password, name, email, role } = req.body;
+
     try {
-        // Hash the password before storing it in the database
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create user with hashed password
         const newUser = await User.create({
             username,
             password: hashedPassword,
@@ -32,10 +31,18 @@ exports.createUser = async (req, res) => {
 
         res.status(201).json(newUser);
     } catch (error) {
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            console.error('Unique constraint error:', error.errors);
+            return res.status(400).json({ error: 'Username or email already exists' });
+        }
+        if (error.name === 'SequelizeValidationError') {
+            console.error('Validation error:', error.errors);
+            return res.status(400).json({ error: error.errors.map(e => e.message).join(', ') });
+        }
+        console.error('Error creating user:', error.message || error);
         res.status(500).json({ error: 'Failed to create user' });
     }
 };
-
 
 // User login
 exports.loginUser = async (req, res) => {
@@ -53,7 +60,7 @@ exports.loginUser = async (req, res) => {
 
         const token = jwt.sign(
             { id: user.id, username: user.username, role: user.role },
-            process.env.JWT_SECRET || 'your_jwt_secret',
+            process.env.JWT_SECRET || 'Anhthu@91',
             { expiresIn: '1h' }
         );
 
@@ -179,3 +186,72 @@ exports.forgotPassword = async (req, res) => {
         res.status(500).json({ error: 'Failed to process password reset request.' });
     }
 };
+
+// Get user by ID
+exports.getUserById = async (req, res) => {
+    const { id } = req.params; // Extract ID from the request parameters
+
+    try {
+        const user = await User.findByPk(id, {
+            attributes: ['id', 'username', 'name', 'email', 'role', 'created_at'] // Limit the fields returned
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error retrieving user by ID:', error.message || error);
+        res.status(500).json({ error: 'Failed to retrieve user' });
+    }
+};
+
+// Delete user by ID
+exports.deleteUser = async (req, res) => {
+    const { id } = req.params; // Extract ID from the request parameters
+
+    try {
+        const user = await User.findByPk(id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        await user.destroy(); // Delete the user from the database
+
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting user:', error.message || error);
+        res.status(500).json({ error: 'Failed to delete user' });
+    }
+};
+
+// Edit user by ID
+exports.editUserById = async (req, res) => {
+    const { id } = req.params; // Extract user ID from request parameters
+    const { name, email, role } = req.body; // Get fields to update from request body
+
+    try {
+        // Find the user by ID
+        const user = await User.findByPk(id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Update the user details
+        user.name = name || user.name;
+        user.email = email || user.email;
+        user.role = role || user.role; // Ensure role validation if required
+
+        // Save the updated user details to the database
+        await user.save();
+
+        res.status(200).json({ message: 'User updated successfully', user });
+    } catch (error) {
+        console.error('Error updating user by ID:', error.message || error);
+        res.status(500).json({ error: 'Failed to update user' });
+    }
+};
+
