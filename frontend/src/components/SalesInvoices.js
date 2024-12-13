@@ -1,65 +1,47 @@
 import React, { useState, useEffect } from "react";
 import {
-    HomeOutlined,
-    MedicineBoxOutlined,
-    AppstoreOutlined,
-    TeamOutlined,
-    FileTextOutlined,
-    UserOutlined,
-    LoginOutlined,
     EditOutlined,
     DeleteOutlined,
-    PlusOutlined
-} from '@ant-design/icons';
+    PlusOutlined,
+    UserOutlined,
+} from "@ant-design/icons";
 import { Avatar, Button, Space, Table, Input, message } from "antd";
 import axios from "axios";
-import logo from '../imgs/trace.svg';
-import './SalesInvoices.css';
-import AddInvoice from "./AddInvoice";
-import EditInvoice from "./EditInvoice";
 import AdminSidebar from "./AdminSidebar";
 import PharmacistSidebar from "./PharmacistSidebar";
-import {useNavigate} from "react-router-dom";
+import AddInvoice from "./AddInvoice";
+import EditInvoice from "./EditInvoice";
+import { useNavigate } from "react-router-dom";
+import "./SalesInvoices.css";
+
 const SalesInvoices = () => {
+    const { Search } = Input;
     const navigate = useNavigate();
     const [invoices, setInvoices] = useState([]);
+    const [filteredInvoices, setFilteredInvoices] = useState([]);
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [editingInvoice, setEditingInvoice] = useState(null);
-
-    const [searchPhone, setSearchPhone] = useState('');
-    const [filteredInvoices, setFilteredInvoices] = useState([]);
-
+    const userRole = sessionStorage.getItem("userRole");
 
     // Fetch invoices from the backend
     useEffect(() => {
         fetchInvoices();
-        setFilteredInvoices(invoices);
-
     }, []);
-
-    useEffect(() => {
-        setFilteredInvoices(invoices);
-    }, [invoices]);
-
-
-    const handleAvaterClick = () => {
-        navigate('/profile');
-    }
-
-    const userRole = sessionStorage.getItem('userRole');
 
     const fetchInvoices = async () => {
         try {
-            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:3000/api/invoices', {
+            const token =
+                localStorage.getItem("token") || sessionStorage.getItem("token");
+            const response = await axios.get("http://localhost:3000/api/invoices", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
             const fetchedInvoices = response.data.map((invoice) => ({
                 ...invoice,
                 key: invoice.id,
-                customerName: invoice.customer?.name || 'N/A', // Map customer name
+                customerName: invoice.customer?.name || "N/A",
+                customerPhone: invoice.customer?.phone || "N/A", // Add customer phone
                 totalAmount: Number(invoice.total_amount),
                 items: invoice.items.map((item) => ({
                     ...item,
@@ -67,51 +49,55 @@ const SalesInvoices = () => {
                 })),
             }));
             setInvoices(fetchedInvoices);
+            setFilteredInvoices(fetchedInvoices);
         } catch (error) {
-            console.error('Error fetching invoices:', error);
-            message.error('Failed to fetch invoices');
+            console.error("Error fetching invoices:", error);
+            message.error("Failed to fetch invoices");
         }
     };
 
+    const handleSearch = (value) => {
+        if (!value.trim()) {
+            setFilteredInvoices(invoices); // Show all invoices if the input is empty
+            return;
+        }
 
-    const handleSearch = () => {
-        if (searchPhone.trim() === '') {
-            setFilteredInvoices(invoices); // Hiển thị toàn bộ nếu không nhập gì
-        } else {
-            const filtered = invoices.filter(invoice =>
-                invoice.customer?.phone && invoice.customer.phone.includes(searchPhone.trim())
-            );
-            setFilteredInvoices(filtered);
+        const filtered = invoices.filter((invoice) =>
+            invoice.customerPhone.includes(value.trim())
+        );
+
+        setFilteredInvoices(filtered);
+
+        if (filtered.length === 0) {
+            message.warning("No invoices found for this phone number.");
         }
     };
 
+    const handleAvaterClick = () => {
+        navigate("/profile");
+    };
 
-
-
-    // Show the Add Invoice Modal
     const showAddInvoiceModal = () => {
         setIsAddModalVisible(true);
     };
 
-    // Show the Edit Invoice Modal
     const showEditInvoiceModal = (invoice) => {
         setEditingInvoice(invoice);
         setIsEditModalVisible(true);
     };
 
-    // Handle the deletion of an invoice
     const deleteInvoice = async (id) => {
         try {
-            const token = sessionStorage.getItem('token');
+            const token = sessionStorage.getItem("token");
             await axios.delete(`http://localhost:3000/api/invoices/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
-            setInvoices(invoices.filter(invoice => invoice.id !== id));
-            message.success('Invoice deleted successfully');
+            setInvoices(invoices.filter((invoice) => invoice.id !== id));
+            message.success("Invoice deleted successfully");
             fetchInvoices();
         } catch (error) {
-            console.error('Error deleting invoice:', error);
-            message.error('Failed to delete invoice');
+            console.error("Error deleting invoice:", error);
+            message.error("Failed to delete invoice");
         }
     };
 
@@ -123,24 +109,29 @@ const SalesInvoices = () => {
 
     const columns = [
         {
-            title: 'Customer Name',
-            dataIndex: 'customerName',
-            key: 'customerName'
+            title: "Customer Name",
+            dataIndex: "customerName",
+            key: "customerName",
         },
         {
-            title: 'Type',
-            dataIndex: 'type',
-            key: 'type'
+            title: "Customer Phone",
+            dataIndex: "customerPhone",
+            key: "customerPhone",
         },
         {
-            title: 'Total Amount',
-            dataIndex: 'totalAmount',
-            key: 'totalAmount',
-            render: (text) => `$${text.toFixed(2)}`
+            title: "Type",
+            dataIndex: "type",
+            key: "type",
         },
         {
-            title: 'Actions',
-            key: 'actions',
+            title: "Total Amount",
+            dataIndex: "totalAmount",
+            key: "totalAmount",
+            render: (text) => `$${text.toFixed(2)}`,
+        },
+        {
+            title: "Actions",
+            key: "actions",
             render: (text, record) => (
                 <Space size="middle">
                     <Button
@@ -159,13 +150,13 @@ const SalesInvoices = () => {
                         Delete
                     </Button>
                 </Space>
-            )
-        }
+            ),
+        },
     ];
 
     return (
         <div className="sales-container">
-            {userRole === 'admin' ? <AdminSidebar /> : <PharmacistSidebar />}
+            {userRole === "admin" ? <AdminSidebar /> : <PharmacistSidebar />}
 
             <main className="main-content">
                 <header className="header">
@@ -174,46 +165,30 @@ const SalesInvoices = () => {
                         <p>Dashboard / Sales & Invoices</p>
                     </div>
                     <div className="header-right">
-                        <div onClick={handleAvaterClick} style={{ cursor: 'pointer' }}>
+                        <div onClick={handleAvaterClick} style={{ cursor: "pointer" }}>
                             <Avatar size={50} icon={<UserOutlined />} />
                         </div>
-
                     </div>
                 </header>
+
                 <section className="sales-table">
+                    <section className='table-header'>
                     <Button
                         type="primary"
                         icon={<PlusOutlined />}
                         onClick={showAddInvoiceModal}
-                        className='add-button'
+                        className="add-button"
                     >
                         Add Invoice
                     </Button>
-
-                    <div className="filters">
-                        <Input
-                            placeholder="Search by phone number"
-                            value={searchPhone}
-                            onChange={(e) => setSearchPhone(e.target.value)}
+                     <Search
+                            placeholder="Search by customer phone"
+                            allowClear
+                            style={{ width: 500}}
+                            onSearch={handleSearch}
                         />
-                        <Button type="primary" onClick={handleSearch}>
-                            Search
-                        </Button>
-                        <Button onClick={() => {
-                            setSearchPhone('');
-                            setFilteredInvoices(invoices);
-                        }}>
-                            Reset
-                        </Button>
-                    </div>
-
-
-                    {/* <Table columns={columns} dataSource={invoices} /> */}
+                    </section>
                     <Table columns={columns} dataSource={filteredInvoices} />
-
-
-
-
                 </section>
 
                 <AddInvoice

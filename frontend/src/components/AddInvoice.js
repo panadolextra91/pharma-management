@@ -84,13 +84,13 @@ const AddInvoice = ({ visible, onCancel }) => {
             message.error("Please select a medicine.");
             return;
         }
-    
+
         const price = Number(selectedMedicine.price);
         if (isNaN(price)) {
             message.error("Invalid price for the selected medicine.");
             return;
         }
-    
+
         const existingItemIndex = items.findIndex((item) => item.medicine_id === selectedMedicine.id);
         if (existingItemIndex >= 0) {
             // Nếu medicine đã tồn tại, cập nhật số lượng và tổng giá trị
@@ -111,11 +111,11 @@ const AddInvoice = ({ visible, onCancel }) => {
             };
             setItems([...items, newItem]);
         }
-    
+
         setSelectedMedicine(null);
         setItemQuantity(1);
     };
-    
+
     const handleQuantityChange = (key, newQuantity) => {
         if (newQuantity === 0) {
             // Xóa medicine nếu số lượng = 0
@@ -130,7 +130,8 @@ const AddInvoice = ({ visible, onCancel }) => {
             setItems(updatedItems);
         }
     };
-    
+
+
 
     const handleSave = async () => {
         try {
@@ -144,18 +145,6 @@ const AddInvoice = ({ visible, onCancel }) => {
             let customerId = null;
 
             if (!values.customer_name || !customerPhone) {
-                // const customerPayload = {
-                //     name: values.customer_name || "",
-                //     phone: customerPhone,
-                // };
-
-                // const customerResponse = await axios.post(
-                //     "http://localhost:3000/api/customers",
-                //     customerPayload,
-                //     { headers: { Authorization: `Bearer ${token}` } }
-                // );
-
-                // customerId = customerResponse.data.id;
             } else {
                 const response = await axios.get(
                     `http://localhost:3000/api/customers/phone/${customerPhone}`,
@@ -184,6 +173,7 @@ const AddInvoice = ({ visible, onCancel }) => {
             console.error("Error creating invoice or customer:", error.response?.data || error.message);
             message.error("Failed to create invoice");
         }
+
     };
 
     const handleCancel = () => {
@@ -226,7 +216,7 @@ const AddInvoice = ({ visible, onCancel }) => {
             render: (total) => (typeof total === "number" ? `$${total.toFixed(2)}` : "N/A"),
         },
     ];
-    
+
 
     return (
         <Modal
@@ -246,7 +236,7 @@ const AddInvoice = ({ visible, onCancel }) => {
                 <Form.Item
                     name="customer_phone"
                     label="Customer Phone"
-                    rules={[{ required: true, message: "Please enter customer phone number!" }]}
+                    rules={[{ required: false, message: "Please enter customer phone number!" }]}
                 >
                     <Input
                         placeholder="Enter customer phone"
@@ -266,7 +256,6 @@ const AddInvoice = ({ visible, onCancel }) => {
                     >
                         <Option value="sale">Sale</Option>
                         <Option value="purchase">Purchase</Option>
-                        {/* <Option value="Overdue">Overdue</Option> */}
                     </Select>
                 </Form.Item>
 
