@@ -38,6 +38,7 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
             const response = await axios.get('http://localhost:3000/api/medicines', {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            console.log("Fetched Medicines:", response.data); // Debugging line
             setMedicines(response.data);
             return response.data;
         } catch (error) {
@@ -57,44 +58,55 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
             setCustomerPhone(invoice.customerPhone !== "N/A" ? invoice.customerPhone : '');
             setInvoiceType(invoice.type); // Set the invoice type based on existing data
 
-            // Prepare items with calculated available_quantity and ensure price is set
+            // Prepare items with updated prices and totals
             const preparedItems = invoice.items.map((item, index) => {
                 const medicine = fetchedMedicines.find(med => med.id === item.medicine_id);
+                if (!medicine) {
+                    message.warning(`Medicine with ID ${item.medicine_id} not found.`);
+                    return {
+                        key: item.medicine_id, // Use medicine_id as key
+                        medicine_id: item.medicine_id,
+                        name: "Unknown Medicine",
+                        quantity: item.quantity,
+                        price: 0,
+                        total: 0,
+                        available_quantity: 0,
+                        toDelete: false,
+                    };
+                }
+
+                // Determine available quantity based on invoice type
                 let availableQuantity = 0;
-                let price = 0;
-
                 if (invoice.type === 'sale') {
-                    // For sale, available_quantity = current stock + existing invoice quantity
-                    availableQuantity = medicine ? medicine.quantity + item.quantity : 0;
+                    availableQuantity = medicine.quantity + item.quantity;
                 } else if (invoice.type === 'purchase') {
-                    // For purchase, set a reasonable upper limit (e.g., 1000)
-                    availableQuantity = medicine ? medicine.quantity + 1000 : 1000;
+                    availableQuantity = medicine.quantity + 1000; // Example upper limit
                 }
 
-                // Set price: prefer item.price from invoice, fallback to medicine.price
-                if (item.price && typeof item.price === 'number') {
-                    price = item.price;
-                } else if (medicine && typeof medicine.price === 'number') {
-                    price = medicine.price;
-                } else {
-                    price = 0; // Default to 0 if price is unavailable
-                }
+                // Ensure price is a number
+                const price = typeof medicine.price === 'number' ? medicine.price : parseFloat(medicine.price) || 0;
 
                 return {
-                    key: index + 1,
+                    key: item.medicine_id, // Use medicine_id as key
                     medicine_id: item.medicine_id,
-                    name: medicine ? medicine.name : "Unknown Medicine",
+                    name: medicine.name,
                     quantity: item.quantity,
                     price: price,
-                    total: item.quantity * price,
+                    total: parseFloat((item.quantity * price).toFixed(2)), // Ensure total is a number with two decimals
                     available_quantity: availableQuantity,
                     toDelete: false, // Initialize the deletion flag
                 };
             });
 
+            console.log("Prepared Items:", preparedItems); // Debugging line
             setItems(preparedItems);
         }
     };
+
+    // Add useEffect to monitor items state
+    useEffect(() => {
+        console.log("Items state updated:", items);
+    }, [items]);
 
     const searchCustomer = async (phone) => {
         try {
@@ -151,14 +163,13 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
         // Update available_quantity for all items based on the new type
         const updatedItems = items.map(item => {
             let newAvailableQuantity = 0;
-            if (value === 'sale') {
-                // For sale, available_quantity = current stock + existing invoice quantity
-                const medicine = medicines.find(med => med.id === item.medicine_id);
-                newAvailableQuantity = medicine ? medicine.quantity + item.quantity : 0;
-            } else if (value === 'purchase') {
-                // For purchase, set a reasonable upper limit (e.g., 1000)
-                const medicine = medicines.find(med => med.id === item.medicine_id);
-                newAvailableQuantity = medicine ? medicine.quantity + 1000 : 1000;
+            const medicine = medicines.find(med => med.id === item.medicine_id);
+            if (medicine) {
+                if (value === 'sale') {
+                    newAvailableQuantity = medicine.quantity + item.quantity;
+                } else if (value === 'purchase') {
+                    newAvailableQuantity = medicine.quantity + 1000;
+                }
             }
             return { ...item, available_quantity: newAvailableQuantity };
         });
@@ -186,9 +197,10 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
             availableQuantity = medicine.quantity + 1000; // Example upper limit
         }
 
-        const price = Number(medicine.price);
-        if (isNaN(price)) {
-            message.error("Invalid price for the selected medicine.");
+        // Ensure price is a number
+        const price = typeof medicine.price === 'number' ? medicine.price : parseFloat(medicine.price) || 0;
+        if (isNaN(price) || price <= 0) {
+            message.error("Invalid or missing price for the selected medicine.");
             return;
         }
 
@@ -211,18 +223,18 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
 
             const updatedItems = items.map(item =>
                 item.medicine_id === selectedMedicine.id
-                    ? { ...item, quantity: newQuantity, total: newQuantity * item.price, toDelete: false }
+                    ? { ...item, quantity: newQuantity, total: parseFloat((newQuantity * item.price).toFixed(2)), toDelete: false }
                     : item
             );
             setItems(updatedItems);
         } else {
             const newItem = {
-                key: items.length + 1,
+                key: selectedMedicine.id, // Use medicine_id as key
                 medicine_id: selectedMedicine.id,
                 name: selectedMedicine.name,
                 quantity: itemQuantity,
                 price: price,
-                total: itemQuantity * price,
+                total: parseFloat((itemQuantity * price).toFixed(2)),
                 available_quantity: availableQuantity, // Store allowed stock for reference
                 toDelete: false, // Initialize the deletion flag
             };
@@ -248,11 +260,6 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
             if (!item) return;
 
             let maxAllowedQuantity = item.available_quantity;
-            if (invoiceType === 'sale') {
-                maxAllowedQuantity = item.available_quantity;
-            } else if (invoiceType === 'purchase') {
-                maxAllowedQuantity = item.available_quantity;
-            }
 
             if (newQuantity > maxAllowedQuantity) {
                 message.error(`Quantity exceeds allowed stock (${maxAllowedQuantity}).`);
@@ -261,7 +268,7 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
 
             const updatedItems = items.map((item) =>
                 item.key === key
-                    ? { ...item, quantity: newQuantity, total: newQuantity * item.price, toDelete: false }
+                    ? { ...item, quantity: newQuantity, total: parseFloat((newQuantity * item.price).toFixed(2)), toDelete: false }
                     : item
             );
             console.log("Updated Items after quantity change:", updatedItems);
