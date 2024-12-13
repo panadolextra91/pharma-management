@@ -59,6 +59,7 @@ const Login = () => {
         } catch (error) {
             message.error("Invalid username or password");
             console.error("Login error:", error);
+            console.error("Login error details:", error.response?.data || error.message);
         }
     };
 

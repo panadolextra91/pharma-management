@@ -11,7 +11,7 @@ import {
     DeleteOutlined,
     PlusOutlined
 } from '@ant-design/icons';
-import { Avatar, Button, Space, Table, message } from "antd";
+import { Avatar, Button, Space, Table, Input, message } from "antd";
 import axios from "axios";
 import logo from '../imgs/trace.svg';
 import './SalesInvoices.css';
@@ -27,10 +27,21 @@ const SalesInvoices = () => {
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [editingInvoice, setEditingInvoice] = useState(null);
 
+    const [searchPhone, setSearchPhone] = useState('');
+    const [filteredInvoices, setFilteredInvoices] = useState([]);
+
+
     // Fetch invoices from the backend
     useEffect(() => {
         fetchInvoices();
+        setFilteredInvoices(invoices);
+
     }, []);
+
+    useEffect(() => {
+        setFilteredInvoices(invoices);
+    }, [invoices]);
+
 
     const handleAvaterClick = () => {
         navigate('/profile');
@@ -63,6 +74,18 @@ const SalesInvoices = () => {
     };
 
 
+    const handleSearch = () => {
+        if (searchPhone.trim() === '') {
+            setFilteredInvoices(invoices); // Hiển thị toàn bộ nếu không nhập gì
+        } else {
+            const filtered = invoices.filter(invoice =>
+                invoice.customer?.phone && invoice.customer.phone.includes(searchPhone.trim())
+            );
+            setFilteredInvoices(filtered);
+        }
+    };
+
+
 
 
     // Show the Add Invoice Modal
@@ -77,11 +100,15 @@ const SalesInvoices = () => {
     };
 
     // Handle the deletion of an invoice
-    const deleteInvoice = async (key) => {
+    const deleteInvoice = async (id) => {
         try {
-            await axios.delete(`http://localhost:3000/api/invoices/${key}`);
+            const token = sessionStorage.getItem('token');
+            await axios.delete(`http://localhost:3000/api/invoices/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setInvoices(invoices.filter(invoice => invoice.id !== id));
             message.success('Invoice deleted successfully');
-            fetchInvoices(); // Refresh the list
+            fetchInvoices();
         } catch (error) {
             console.error('Error deleting invoice:', error);
             message.error('Failed to delete invoice');
@@ -138,7 +165,7 @@ const SalesInvoices = () => {
 
     return (
         <div className="sales-container">
-            { userRole === 'admin' ? <AdminSidebar/> : <PharmacistSidebar/>}
+            {userRole === 'admin' ? <AdminSidebar /> : <PharmacistSidebar />}
 
             <main className="main-content">
                 <header className="header">
@@ -147,22 +174,48 @@ const SalesInvoices = () => {
                         <p>Dashboard / Sales & Invoices</p>
                     </div>
                     <div className="header-right">
-                        <div onClick={handleAvaterClick} style={{cursor: 'pointer'}}>
-                            <Avatar size={50} icon={<UserOutlined/>}/>
+                        <div onClick={handleAvaterClick} style={{ cursor: 'pointer' }}>
+                            <Avatar size={50} icon={<UserOutlined />} />
                         </div>
+
                     </div>
                 </header>
                 <section className="sales-table">
                     <Button
                         type="primary"
-                        icon={<PlusOutlined/>}
+                        icon={<PlusOutlined />}
                         onClick={showAddInvoiceModal}
                         className='add-button'
                     >
                         Add Invoice
                     </Button>
-                    <Table columns={columns} dataSource={invoices}/>
+
+                    <div className="filters">
+                        <Input
+                            placeholder="Search by phone number"
+                            value={searchPhone}
+                            onChange={(e) => setSearchPhone(e.target.value)}
+                        />
+                        <Button type="primary" onClick={handleSearch}>
+                            Search
+                        </Button>
+                        <Button onClick={() => {
+                            setSearchPhone('');
+                            setFilteredInvoices(invoices);
+                        }}>
+                            Reset
+                        </Button>
+                    </div>
+
+
+                    {/* <Table columns={columns} dataSource={invoices} /> */}
+                    <Table columns={columns} dataSource={filteredInvoices} />
+
+
+
+
                 </section>
+
                 <AddInvoice
                     visible={isAddModalVisible}
                     onCreate={(newInvoice) => {
