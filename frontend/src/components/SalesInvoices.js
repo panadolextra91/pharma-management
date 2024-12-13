@@ -1,3 +1,5 @@
+// SalesInvoices.js
+
 import React, { useState, useEffect } from "react";
 import {
     EditOutlined,
@@ -39,7 +41,6 @@ const SalesInvoices = () => {
 
             const fetchedInvoices = response.data.map((invoice) => ({
                 ...invoice,
-                key: invoice.id,
                 customerName: invoice.customer?.name || "N/A",
                 customerPhone: invoice.customer?.phone || "N/A", // Add customer phone
                 totalAmount: Number(invoice.total_amount),
@@ -73,7 +74,7 @@ const SalesInvoices = () => {
         }
     };
 
-    const handleAvaterClick = () => {
+    const handleAvatarClick = () => { // Corrected typo from 'Avater' to 'Avatar'
         navigate("/profile");
     };
 
@@ -92,9 +93,12 @@ const SalesInvoices = () => {
             await axios.delete(`http://localhost:3000/api/invoices/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            // Remove the deleted invoice from both invoices and filteredInvoices state
             setInvoices(invoices.filter((invoice) => invoice.id !== id));
+            setFilteredInvoices(filteredInvoices.filter((invoice) => invoice.id !== id));
             message.success("Invoice deleted successfully");
-            fetchInvoices();
+            // Optionally, you can call fetchInvoices() to ensure data consistency
+            // fetchInvoices();
         } catch (error) {
             console.error("Error deleting invoice:", error);
             message.error("Failed to delete invoice");
@@ -122,6 +126,7 @@ const SalesInvoices = () => {
             title: "Type",
             dataIndex: "type",
             key: "type",
+            render: (type) => type.charAt(0).toUpperCase() + type.slice(1), // Capitalize first letter
         },
         {
             title: "Total Amount",
@@ -145,7 +150,7 @@ const SalesInvoices = () => {
                         icon={<DeleteOutlined />}
                         style={{ borderRadius: 50 }}
                         danger
-                        onClick={() => deleteInvoice(record.key)}
+                        onClick={() => deleteInvoice(record.id)} // Use record.id instead of record.key
                     >
                         Delete
                     </Button>
@@ -165,7 +170,7 @@ const SalesInvoices = () => {
                         <p>Dashboard / Sales & Invoices</p>
                     </div>
                     <div className="header-right">
-                        <div onClick={handleAvaterClick} style={{ cursor: "pointer" }}>
+                        <div onClick={handleAvatarClick} style={{ cursor: "pointer" }}>
                             <Avatar size={50} icon={<UserOutlined />} />
                         </div>
                     </div>
@@ -173,27 +178,27 @@ const SalesInvoices = () => {
 
                 <section className="sales-table">
                     <section className='table-header'>
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={showAddInvoiceModal}
-                        className="add-button"
-                    >
-                        Add Invoice
-                    </Button>
-                     <Search
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={showAddInvoiceModal}
+                            className="add-button"
+                        >
+                            Add Invoice
+                        </Button>
+                        <Search
                             placeholder="Search by customer phone"
                             allowClear
-                            style={{ width: 500}}
+                            style={{ width: 500 }}
                             onSearch={handleSearch}
                         />
                     </section>
-                    <Table columns={columns} dataSource={filteredInvoices} />
+                    <Table columns={columns} dataSource={filteredInvoices} rowKey="id" /> {/* Set rowKey="id" */}
                 </section>
 
                 <AddInvoice
                     visible={isAddModalVisible}
-                    onCreate={(newInvoice) => {
+                    onCreate={(newInvoice) => { // Handle onCreate callback
                         setIsAddModalVisible(false);
                         fetchInvoices(); // Refresh the list
                     }}

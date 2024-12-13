@@ -3,7 +3,7 @@ const medicineController = require('../controllers/medicineController');
 const authenticateToken = require('../middleware/authMiddleware');
 const authorize = require('../middleware/authorizeMiddleware');
 const router = express.Router();
-
+//medicineRoutes.js
 router.get('/low-stock', authenticateToken, medicineController.getLowStockMedicines);
 router.get('/near-expiry', authenticateToken, medicineController.getNearExpiryMedicines);
 router.get('/out-of-stock', authenticateToken, medicineController.getOutOfStockMedicines);
