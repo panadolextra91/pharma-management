@@ -5,6 +5,7 @@ import logo from '../imgs/trace.svg';
 import { Input, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import api from '../api';
+import axios from "axios";
 
 const Login = () => {
     const [username, setUsername] = useState('');
