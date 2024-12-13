@@ -1,5 +1,4 @@
 // SalesInvoices.js
-
 import React, { useState, useEffect } from "react";
 import {
     EditOutlined,
@@ -8,13 +7,13 @@ import {
     UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Space, Table, Input, message } from "antd";
-import axios from "axios";
 import AdminSidebar from "./AdminSidebar";
 import PharmacistSidebar from "./PharmacistSidebar";
 import AddInvoice from "./AddInvoice";
 import EditInvoice from "./EditInvoice";
 import { useNavigate } from "react-router-dom";
 import "./SalesInvoices.css";
+import api from '../api'
 
 const SalesInvoices = () => {
     const { Search } = Input;
@@ -35,7 +34,7 @@ const SalesInvoices = () => {
         try {
             const token =
                 localStorage.getItem("token") || sessionStorage.getItem("token");
-            const response = await axios.get("/api/invoices", {
+            const response = await api.get("/invoices", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -90,7 +89,7 @@ const SalesInvoices = () => {
     const deleteInvoice = async (id) => {
         try {
             const token = sessionStorage.getItem("token");
-            await axios.delete(`/api/invoices/${id}`, {
+            await api.delete(`/invoices/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             // Remove the deleted invoice from both invoices and filteredInvoices state

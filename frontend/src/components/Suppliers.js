@@ -1,27 +1,18 @@
 import React, {useEffect, useState} from "react";
 import {
-    HomeOutlined,
-    MedicineBoxOutlined,
-    AppstoreOutlined,
-    TeamOutlined,
-    ShoppingCartOutlined,
-    FileTextOutlined,
-    BarChartOutlined,
     UserOutlined,
-    LoginOutlined,
     EditOutlined,
     DeleteOutlined,
     PlusOutlined
 } from '@ant-design/icons';
 import {Avatar, Button, message, Space, Table} from "antd";
-import logo from '../imgs/trace.svg';
 import './Suppliers.css';
 import AddSupplierForm from "./AddSupplierForm"; // Import AddSupplierForm component
 import EditSupplierForm from "./EditSupplierForm";
-import axios from "axios"; // Import EditSupplierForm component
 import PharmacistSidebar from "./PharmacistSidebar";
 import AdminSidebar from "./AdminSidebar";
 import {useNavigate} from "react-router-dom";
+import api from '../api'
 //Suppliers.js
 const Suppliers = () => {
     const navigate = useNavigate();
@@ -42,7 +33,7 @@ const Suppliers = () => {
     const fetchSuppliers = async () => {
         try {
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            const response = await axios.get('/api/suppliers', {
+            const response = await api.get('/suppliers', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -77,7 +68,7 @@ const Suppliers = () => {
     const handleAddSupplier = async (values) => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.post('/api/suppliers', values, {
+            const response = await api.post('/suppliers', values, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSuppliers([...suppliers, response.data]);
@@ -98,8 +89,8 @@ const Suppliers = () => {
                 address: values.address,
             };
     
-            const response = await axios.put(
-                `/api/suppliers/${payload.id}`,
+            const response = await api.put(
+                `/suppliers/${payload.id}`,
                 payload,
                 {
                     headers: { Authorization: `Bearer ${token}` }
@@ -129,7 +120,7 @@ const Suppliers = () => {
     const deleteSupplier = async (id) => {
         try {
             const token = sessionStorage.getItem('token');
-            await axios.delete(`/api/suppliers/${id}`, {
+            await api.delete(`/suppliers/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSuppliers(suppliers.filter(supplier => supplier.id !== id));

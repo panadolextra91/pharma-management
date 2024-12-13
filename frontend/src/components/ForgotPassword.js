@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Form, Input, Button, message, Card } from "antd";
-import axios from "axios";
 import { MailOutlined } from "@ant-design/icons";
 import "./ForgotPassword.css";
+import api from '../api'
 
 const ForgotPassword = () => {
     const [loading, setLoading] = useState(false);
@@ -11,7 +11,7 @@ const ForgotPassword = () => {
         const { email } = values;
         setLoading(true);
         try {
-            await axios.post("/api/users/forgot-password", { email });
+            await api.post("/users/forgot-password", { email });
             message.success("A new password has been sent to your email.");
         } catch (error) {
             console.error("Error in forgot password:", error);

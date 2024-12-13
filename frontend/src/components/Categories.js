@@ -11,8 +11,7 @@ import {
     DeleteOutlined
 } from '@ant-design/icons';
 import { Avatar, Button, Space, Table, message } from "antd";
-import axios from "axios";
-import logo from '../imgs/trace.svg';
+import api from '../api';
 import './Categories.css';
 import EditCategoryForm from "./EditCategoryForm";
 import PharmacistSidebar from "./PharmacistSidebar";
@@ -39,7 +38,7 @@ const Categories = () => {
     const fetchCategories = async () => {
         try {
             const token = localStorage.getItem('token') || sessionStorage.getItem('token'); // Retrieve the token
-            const response = await axios.get('/api/categories', {
+            const response = await api.get('/categories', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -92,7 +91,7 @@ const Categories = () => {
                 name: values.name,
                 description: values.des
             };
-            await axios.put(`/api/categories/${currentCategory.key}`, payload, {
+            await api.put(`/categories/${currentCategory.key}`, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -114,7 +113,7 @@ const Categories = () => {
     const deleteCategory = async (key) => {
         try {
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            await axios.delete(`/api/categories/${key}`, {
+            await api.delete(`/categories/${key}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

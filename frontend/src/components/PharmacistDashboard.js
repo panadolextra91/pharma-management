@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Avatar, Card, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import {Bar, Line} from "@ant-design/plots"; // Ensure you have this installed
-import axios from "axios";
 import { getSessionData } from "../utils/sessionUtils";
 import "./PharmacistDashboard.css";
 import PharmacistSidebar from "./PharmacistSidebar";
+import api from '../api'
 
 const PharmacistDashboard = () => {
   const [dailyIncomeData, setDailyIncomeData] = useState([]);
@@ -38,7 +38,7 @@ const PharmacistDashboard = () => {
     try {
       console.log("Token being sent:", token);
 
-      const response = await axios.get("http://localhost:3000/api/invoices/sales/selling-medicines", {
+      const response = await api.get("/invoices/sales/selling-medicines", {
         headers: { Authorization: `Bearer ${token}` }, // Ensure token is here
       });
       setSellingMedicinesData(response.data);
@@ -50,8 +50,8 @@ const PharmacistDashboard = () => {
 
   const fetchDailyIncome = async (token) => {
     try {
-      const response = await axios.get(
-          "/api/invoices/sales/daily-income",
+      const response = await api.get(
+          "/invoices/sales/daily-income",
           { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -70,7 +70,7 @@ const PharmacistDashboard = () => {
 
   const fetchRevenueData = async (token) => {
     try {
-      const response = await axios.get("/api/invoices/revenue/monthly", {
+      const response = await api.get("/invoices/revenue/monthly", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRevenueData(response.data);
@@ -84,17 +84,17 @@ const PharmacistDashboard = () => {
 
   const fetchDashboardData = async (token) => {
     try {
-      const lowStockResponse = await axios.get("/api/medicines/low-stock", {
+      const lowStockResponse = await api.get("/medicines/low-stock", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setLowStockAlerts(lowStockResponse.data);
 
-      const nearExpiryResponse = await axios.get("/api/medicines/near-expiry", {
+      const nearExpiryResponse = await api.get("/medicines/near-expiry", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNearExpiryAlerts(nearExpiryResponse.data);
 
-      const outOfStockResponse = await axios.get("/api/medicines/out-of-stock", {
+      const outOfStockResponse = await api.get("/medicines/out-of-stock", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOutOfStockAlerts(outOfStockResponse.data);
@@ -106,7 +106,7 @@ const PharmacistDashboard = () => {
 
   const fetchUserProfile = async (token) => {
     try {
-      const response = await axios.get("/api/users/profile", {
+      const response = await api.get("/users/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUserName(response.data.name);

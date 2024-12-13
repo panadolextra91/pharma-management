@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Modal, Form, Input, Button, Table, Select, InputNumber, message } from 'antd';
-import axios from 'axios';
 import debounce from 'lodash.debounce';
+import api from '../api'
 
 const { Option } = Select;
 
@@ -35,7 +35,7 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
                 message.error("Authentication token is missing.");
                 return [];
             }
-            const response = await axios.get('/api/medicines', {
+            const response = await api.get('/medicines', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             console.log("Fetched Medicines:", response.data); // Debugging line
@@ -122,8 +122,8 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
                 return;
             }
 
-            const response = await axios.get(
-                `/api/customers/phone/${phone}`,
+            const response = await api.get(
+                `/customers/phone/${phone}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -290,8 +290,8 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
             if (values.customer_phone) {
                 // Fetch or create customer logic
                 try {
-                    const response = await axios.get(
-                        `/api/customers/phone/${values.customer_phone}`,
+                    const response = await api.get(
+                        `/customers/phone/${values.customer_phone}`,
                         { headers: { Authorization: `Bearer ${token}` } }
                     );
                     if (response.data) {
@@ -333,7 +333,7 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
             console.log("Payload sent to backend:", payload);
 
             // Make PUT request to update the invoice
-            const response = await axios.put(`/api/invoices/${invoice.id}`, payload, {
+            const response = await api.put(`/invoices/${invoice.id}`, payload, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

@@ -6,8 +6,7 @@ import {
     PlusOutlined
 } from '@ant-design/icons';
 import {Avatar, Button, Space, Table, Tag, Tooltip, message, Input} from "antd";
-import axios from "axios";
-import logo from '../imgs/trace.svg';
+import api from '../api'
 import './Medicines.css';
 import AddMedicineForm from "./AddMedicineForm";
 import EditMedicineForm from "./EditMedicineForm";
@@ -38,7 +37,7 @@ const Medicines = () => {
         }
 
         try {
-            const response = await axios.get(`/api/medicines/name/${value}`, {
+            const response = await api.get(`/medicines/name/${value}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -67,7 +66,7 @@ const Medicines = () => {
     const fetchMedicines = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get('/api/medicines', {
+            const response = await api.get('/medicines', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMedicines(response.data);
@@ -81,7 +80,7 @@ const Medicines = () => {
     const fetchCategories = async () => {
         try {
             const token = sessionStorage.getItem('token'); // Ensure token is retrieved
-            const response = await axios.get('/api/categories', {
+            const response = await api.get('/categories', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setCategories(response.data);
@@ -93,7 +92,7 @@ const Medicines = () => {
     const fetchSuppliers = async () => {
         try {
             const token = sessionStorage.getItem('token'); // Ensure token is retrieved
-            const response = await axios.get('/api/suppliers', {
+            const response = await api.get('/suppliers', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSuppliers(response.data);
@@ -105,7 +104,7 @@ const Medicines = () => {
     const fetchLocations = async () => {
         try {
             const token = sessionStorage.getItem('token'); // Ensure token is retrieved
-            const response = await axios.get('/api/locations', {
+            const response = await api.get('/locations', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setLocations(response.data);
@@ -127,7 +126,7 @@ const Medicines = () => {
     const handleAddMedicine = async (values) => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.post('/api/medicines', values, {
+            const response = await api.post('/medicines', values, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMedicines([...medicines, response.data]); // Add new medicine to state
@@ -168,8 +167,8 @@ const Medicines = () => {
             };
     
             // Send the update request to the API
-            const response = await axios.put(
-                `/api/medicines/${updatedMedicine.id}`,
+            const response = await api.put(
+                `/medicines/${updatedMedicine.id}`,
                 payload,
                 {
                     headers: { Authorization: `Bearer ${token}` }
@@ -198,7 +197,7 @@ const Medicines = () => {
     const deleteMedicine = async (id) => {
         try {
             const token = sessionStorage.getItem('token');
-            await axios.delete(`/api/medicines/${id}`, {
+            await api.delete(`/medicines/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMedicines(medicines.filter(medicine => medicine.id !== id));
