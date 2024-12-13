@@ -26,8 +26,10 @@ const Login = () => {
             // Save the token
             if (remember) {
                 localStorage.setItem('token', token);
+                console.log('Token saved in local:', localStorage.setItem('token'));
             } else {
                 sessionStorage.setItem('token', token);
+                console.log('Token saved in sessionStorage:', sessionStorage.getItem('token'));
             }
 
             // Fetch user profile to check role
@@ -40,8 +42,10 @@ const Login = () => {
             // Save the role
             if (remember) {
                 localStorage.setItem('userRole', role);
+                console.log('Role saved in localStorage:', localStorage.getItem('userRole'));
             } else {
                 sessionStorage.setItem('userRole', role);
+                console.log('Role saved in sessionStorage:', sessionStorage.getItem('userRole'));
             }
 
             // Debugging logs

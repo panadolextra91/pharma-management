@@ -203,48 +203,82 @@ exports.getMonthlyRevenue = async (req, res) => {
     }
 };
 
-//get sales data for month and today
-/*exports.getSellingMedicines = async (req, res) => {
+//get thuoc da ban
+exports.getSellingMedicines = async (req, res) => {
     try {
-        const today = new Date();
-        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+        console.log('Fetching selling medicines data...');
 
-        // Fetch sales for the month
-        const monthlySales = await InvoiceItem.findAll({
+        const invoices = await Invoice.findAll({ where: { type: 'sale' } });
+        console.log('Invoices of type sale:', invoices);
+
+        if (!invoices.length) {
+            console.log('No invoices of type sale found.');
+            return res.status(404).json({ error: 'No sales invoices found' });
+        }
+
+        const salesData = await InvoiceItem.findAll({
             attributes: [
                 'medicine_id',
-                [sequelize.fn('SUM', sequelize.col('InvoiceItem.quantity')), 'total_quantity'], // Qualify the column
+                [sequelize.fn('SUM', sequelize.col('InvoiceItem.quantity')), 'total_quantity'],
             ],
-            include: [{ model: Medicine, as: 'medicine', attributes: ['name'] }], // Use correct alias
-            where: {
-                createdAt: { [Op.between]: [startOfMonth, new Date()] },
-            },
-            group: ['InvoiceItem.medicine_id'], // Qualify the group by
-            order: [[sequelize.fn('SUM', sequelize.col('InvoiceItem.quantity')), 'DESC']], // Qualify the column in order
+            include: [
+                {
+                    model: Medicine,
+                    as: 'medicine',
+                    attributes: ['name'],
+                },
+                {
+                    model: Invoice,
+                    as: 'invoice',
+                    attributes: [],
+                    where: { type: 'sale' },
+                },
+            ],
+            group: ['medicine_id', 'medicine.id', 'medicine.name'],
         });
 
-        // Fetch sales for today
-        const dailySales = await InvoiceItem.findAll({
-            attributes: [
-                'medicine_id',
-                [sequelize.fn('SUM', sequelize.col('InvoiceItem.quantity')), 'total_quantity'], // Qualify the column
-            ],
-            include: [{ model: Medicine, as: 'medicine', attributes: ['name'] }], // Use correct alias
-            where: {
-                createdAt: { [Op.between]: [startOfDay, new Date()] },
-            },
-            group: ['InvoiceItem.medicine_id'], // Qualify the group by
-            order: [[sequelize.fn('SUM', sequelize.col('InvoiceItem.quantity')), 'DESC']], // Qualify the column in order
-        });
+        console.log('Sales Data:', JSON.stringify(salesData, null, 2)); // Log sales data
 
-        res.status(200).json({
-            monthlySales,
-            dailySales,
-            mostPurchased: monthlySales[0] || null, // Highlight the most purchased medicine
-        });
+        // Check if sales data is empty
+        if (!salesData.length) {
+            console.log('No sales data found.');
+            return res.status(404).json({ error: 'No sales data found' });
+        }
+
+        res.status(200).json(salesData);
     } catch (error) {
-        console.error('Error fetching selling medicines data:', error);
+        console.error('Error in getSellingMedicines:', error);
         res.status(500).json({ error: 'Failed to fetch selling medicines data' });
     }
-};*/
+};
+
+//doanh thu theo ngay
+exports.getDailyIncome = async (req, res) => {
+    try {
+        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+
+        const dailyIncome = await Invoice.findAll({
+            attributes: [
+                [sequelize.fn('DATE', sequelize.col('invoice_date')), 'date'],
+                [sequelize.fn('SUM', sequelize.col('total_amount')), 'total_income'],
+            ],
+            where: {
+                type: 'sale',
+                invoice_date: { [Op.between]: [startOfMonth, endOfMonth] },
+            },
+            group: [sequelize.fn('DATE', sequelize.col('invoice_date'))],
+            order: [[sequelize.fn('DATE', sequelize.col('invoice_date')), 'ASC']],
+        });
+
+        res.status(200).json(dailyIncome);
+    } catch (error) {
+        console.error('Error fetching daily income:', error);
+        res.status(500).json({ error: 'Failed to fetch daily income' });
+    }
+};
+
+
+
+
+

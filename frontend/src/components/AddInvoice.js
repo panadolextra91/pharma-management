@@ -132,7 +132,6 @@ const AddInvoice = ({ visible, onCancel }) => {
     };
 
 
-
     const handleSave = async () => {
         try {
             const values = await form.validateFields();
@@ -145,6 +144,18 @@ const AddInvoice = ({ visible, onCancel }) => {
             let customerId = null;
 
             if (!values.customer_name || !customerPhone) {
+                // const customerPayload = {
+                //     name: values.customer_name || "",
+                //     phone: customerPhone,
+                // };
+
+                // const customerResponse = await axios.post(
+                //     "http://localhost:3000/api/customers",
+                //     customerPayload,
+                //     { headers: { Authorization: `Bearer ${token}` } }
+                // );
+
+                // customerId = customerResponse.data.id;
             } else {
                 const response = await axios.get(
                     `http://localhost:3000/api/customers/phone/${customerPhone}`,
@@ -173,7 +184,6 @@ const AddInvoice = ({ visible, onCancel }) => {
             console.error("Error creating invoice or customer:", error.response?.data || error.message);
             message.error("Failed to create invoice");
         }
-
     };
 
     const handleCancel = () => {

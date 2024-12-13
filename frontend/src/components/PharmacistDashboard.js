@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, Card, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import { Bar } from "@ant-design/plots"; // Ensure you have this installed
+import {Bar, Line} from "@ant-design/plots"; // Ensure you have this installed
 import axios from "axios";
 import { getSessionData } from "../utils/sessionUtils";
 import "./PharmacistDashboard.css";
 import PharmacistSidebar from "./PharmacistSidebar";
 
 const PharmacistDashboard = () => {
+  const [dailyIncomeData, setDailyIncomeData] = useState([]);
+  const [sellingMedicinesData, setSellingMedicinesData] = useState([]);
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [revenueData, setRevenueData] = useState({ income: 0, outcome: 0, total: 0 });
@@ -25,11 +27,46 @@ const PharmacistDashboard = () => {
       navigate(role === "admin" ? "/admin-dashboard" : "/");
       return;
     }
-
+    fetchSellingMedicinesData(token);
+    fetchDailyIncome(token);
     fetchRevenueData(token);
     fetchDashboardData(token);
     fetchUserProfile(token);
   }, [navigate]);
+
+  const fetchSellingMedicinesData = async (token) => {
+    try {
+      console.log("Token being sent:", token);
+
+      const response = await axios.get("http://localhost:3000/api/invoices/sales/selling-medicines", {
+        headers: { Authorization: `Bearer ${token}` }, // Ensure token is here
+      });
+      setSellingMedicinesData(response.data);
+    } catch (error) {
+      console.error("Failed to fetch selling medicines data:", error);
+      message.error("Unable to load selling medicines data.");
+    }
+  };
+
+  const fetchDailyIncome = async (token) => {
+    try {
+      const response = await axios.get(
+          "http://localhost:3000/api/invoices/sales/daily-income",
+          { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Transform the data for the line chart
+      const formattedData = response.data.map((item) => ({
+        date: item.date, // Make sure 'date' matches your backend's response
+        total_income: parseFloat(item.total_income),
+      }));
+
+      setDailyIncomeData(formattedData);
+    } catch (error) {
+      console.error("Failed to fetch daily income data:", error);
+      message.error("Unable to load daily income data.");
+    }
+  };
 
   const fetchRevenueData = async (token) => {
     try {
@@ -89,6 +126,40 @@ const PharmacistDashboard = () => {
     colorField: "type",
   };
 
+  const sellingMedicinesChartConfig = {
+    data: sellingMedicinesData.map((item) => ({
+      name: item.medicine.name,
+      quantity: parseInt(item.total_quantity),
+    })),
+    xField: 'name',
+    yField: 'quantity',
+    colorField: 'name', // Optional: Different colors for each bar
+    meta: {
+      quantity: { alias: 'Quantity Sold' },
+      name: { alias: 'Medicine' },
+    },
+  };
+
+  const dailyIncomeChartConfig = {
+    data: dailyIncomeData,
+    xField: 'date',
+    yField: 'total_income',
+    xAxis: {
+      type: 'time',
+      tickCount: 10,
+    },
+    yAxis: {
+      label: {
+        formatter: (value) => `$${value}`,
+      },
+    },
+    smooth: true, // Optional: Makes the line smoother
+    point: {
+      size: 5,
+      shape: 'circle',
+    },
+  };
+
   const handleAvatarClick = () => navigate("/profile");
 
   return (
@@ -100,8 +171,8 @@ const PharmacistDashboard = () => {
               <h1>Welcome Back, {userName}</h1>
               <p>Overview of the pharmacy's current status.</p>
             </div>
-            <div className="header-right" onClick={handleAvatarClick} style={{ cursor: "pointer" }}>
-              <Avatar size={50} icon={<UserOutlined />} />
+            <div className="header-right" onClick={handleAvatarClick} style={{cursor: "pointer"}}>
+              <Avatar size={50} icon={<UserOutlined/>}/>
             </div>
           </header>
 
@@ -140,11 +211,23 @@ const PharmacistDashboard = () => {
             </div>
           </section>
 
-          <section className="revenue-section">
-            <Card loading={loading} title="Total Revenue This Month" style={{ marginBottom: 16 }}>
-              <h2>{`$${revenueData.total.toFixed(2)}`}</h2>
+          <div className="revenue-container">
+            <section className="revenue-section">
+              <Card loading={loading} title="Total Revenue This Month">
+                <h2>{`$${revenueData.total.toFixed(2)}`}</h2>
+                <Bar {...revenueChartConfig} />
+              </Card>
+            </section>
+            <section className="daily-income-section">
+              <Card title="Daily Income">
+                <Line {...dailyIncomeChartConfig} />
+              </Card>
+            </section>
+          </div>
+          <section className="selling-medicines-section">
+            <Card title="Selling Medicines">
+              <Bar {...sellingMedicinesChartConfig} />
             </Card>
-            <Bar {...revenueChartConfig} />
           </section>
         </main>
       </div>

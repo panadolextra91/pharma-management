@@ -13,22 +13,7 @@ router.post('/', authenticateToken, authorize('admin', 'pharmacist'), invoiceCon
 router.put('/:id', authenticateToken, authorize('admin', 'pharmacist'), invoiceController.updateInvoice);
 router.delete('/:id', authenticateToken, authorize('admin', 'pharmacist'), invoiceController.deleteInvoice);
 router.get('/revenue/monthly', authenticateToken, authorize('admin', 'pharmacist'), invoiceController.getMonthlyRevenue);
-//router.get('/sales/selling-medicines', authenticateToken, authorize('admin', 'pharmacist'), invoiceController.getSellingMedicines);
-router.get('/sales', authenticateToken, authorize('admin', 'pharmacist'), async (req, res) => {
-    try {
-        const sales = await Invoice.findAll({
-            where: { type: 'sale' },
-            include: {
-                model: InvoiceItem,
-                as: 'items',
-                include: [Medicine]
-            }
-        });
-        res.status(200).json(sales);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to retrieve sales' });
-    }
-});
-
+router.get('/sales/selling-medicines', authenticateToken, authorize('admin', 'pharmacist'), invoiceController.getSellingMedicines);
+router.get('/sales/daily-income', authenticateToken, authorize('admin', 'pharmacist'), invoiceController.getDailyIncome);
 
 module.exports = router;
