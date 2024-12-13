@@ -34,7 +34,7 @@ const UserManage = () => {
     const fetchUsers = async () => {
         try {
             const token = sessionStorage.getItem("token");
-            const response = await axios.get("http://localhost:3000/api/users", {
+            const response = await axios.get("/api/users", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setUsers(response.data);
@@ -49,7 +49,7 @@ const UserManage = () => {
         try {
             const token = sessionStorage.getItem("token");
             const response = await axios.post(
-                "http://localhost:3000/api/users",
+                "/api/users",
                 values,
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -68,7 +68,7 @@ const UserManage = () => {
         try {
             const token = sessionStorage.getItem("token");
             const response = await axios.put(
-                `http://localhost:3000/api/users/${editingUser.id}`,
+                `/api/users/${editingUser.id}`,
                 values,
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -99,7 +99,7 @@ const UserManage = () => {
     const handleDeleteUser = async (id) => {
         try {
             const token = sessionStorage.getItem("token");
-            await axios.delete(`http://localhost:3000/api/users/${id}`, {
+            await axios.delete(`/api/users/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setUsers(users.filter((user) => user.id !== id));

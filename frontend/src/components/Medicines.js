@@ -38,7 +38,7 @@ const Medicines = () => {
         }
 
         try {
-            const response = await axios.get(`http://localhost:3000/api/medicines/name/${value}`, {
+            const response = await axios.get(`/api/medicines/name/${value}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -67,7 +67,7 @@ const Medicines = () => {
     const fetchMedicines = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:3000/api/medicines', {
+            const response = await axios.get('/api/medicines', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMedicines(response.data);
@@ -81,7 +81,7 @@ const Medicines = () => {
     const fetchCategories = async () => {
         try {
             const token = sessionStorage.getItem('token'); // Ensure token is retrieved
-            const response = await axios.get('http://localhost:3000/api/categories', {
+            const response = await axios.get('/api/categories', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setCategories(response.data);
@@ -93,7 +93,7 @@ const Medicines = () => {
     const fetchSuppliers = async () => {
         try {
             const token = sessionStorage.getItem('token'); // Ensure token is retrieved
-            const response = await axios.get('http://localhost:3000/api/suppliers', {
+            const response = await axios.get('/api/suppliers', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSuppliers(response.data);
@@ -105,7 +105,7 @@ const Medicines = () => {
     const fetchLocations = async () => {
         try {
             const token = sessionStorage.getItem('token'); // Ensure token is retrieved
-            const response = await axios.get('http://localhost:3000/api/locations', {
+            const response = await axios.get('/api/locations', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setLocations(response.data);
@@ -127,7 +127,7 @@ const Medicines = () => {
     const handleAddMedicine = async (values) => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.post('http://localhost:3000/api/medicines', values, {
+            const response = await axios.post('/api/medicines', values, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMedicines([...medicines, response.data]); // Add new medicine to state
@@ -169,7 +169,7 @@ const Medicines = () => {
     
             // Send the update request to the API
             const response = await axios.put(
-                `http://localhost:3000/api/medicines/${updatedMedicine.id}`,
+                `/api/medicines/${updatedMedicine.id}`,
                 payload,
                 {
                     headers: { Authorization: `Bearer ${token}` }
@@ -198,7 +198,7 @@ const Medicines = () => {
     const deleteMedicine = async (id) => {
         try {
             const token = sessionStorage.getItem('token');
-            await axios.delete(`http://localhost:3000/api/medicines/${id}`, {
+            await axios.delete(`/api/medicines/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMedicines(medicines.filter(medicine => medicine.id !== id));

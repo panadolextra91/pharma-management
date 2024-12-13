@@ -19,7 +19,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await fetch('http://localhost:3000/api/users/profile', { // Correct endpoint
+                const response = await fetch('/api/users/profile', { // Correct endpoint
                     headers: {
                         Authorization: `Bearer ${sessionStorage.getItem('token')}`,
                     },
@@ -52,7 +52,7 @@ const Profile = () => {
     // Save changes to the user profile
     const handleSaveChanges = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/users/profile', {
+            const response = await fetch('/api/users/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const Profile = () => {
     // Handle password change
     const handlePasswordChange = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/users/change-password', {
+            const response = await fetch('/api/users/change-password', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

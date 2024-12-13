@@ -40,7 +40,7 @@ const AddInvoice = ({ visible, onCreate, onCancel }) => { // Destructure onCreat
                 message.error("Authentication token is missing.");
                 return;
             }
-            const response = await axios.get('http://localhost:3000/api/medicines', {
+            const response = await axios.get('/api/medicines', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setMedicines(response.data);
@@ -60,7 +60,7 @@ const AddInvoice = ({ visible, onCreate, onCancel }) => { // Destructure onCreat
             }
 
             const response = await axios.get(
-                `http://localhost:3000/api/customers/phone/${phone}`,
+                `/api/customers/phone/${phone}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -215,7 +215,7 @@ const AddInvoice = ({ visible, onCreate, onCancel }) => { // Destructure onCreat
                 // Fetch or create customer logic
                 try {
                     const response = await axios.get(
-                        `http://localhost:3000/api/customers/phone/${values.customer_phone}`,
+                        `/api/customers/phone/${values.customer_phone}`,
                         { headers: { Authorization: `Bearer ${token}` } }
                     );
                     if (response.data) {
@@ -254,7 +254,7 @@ const AddInvoice = ({ visible, onCreate, onCancel }) => { // Destructure onCreat
             };
 
             // Make POST request to create the invoice
-            const response = await axios.post("http://localhost:3000/api/invoices", payload, {
+            const response = await axios.post("/api/invoices", payload, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

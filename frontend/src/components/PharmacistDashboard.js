@@ -51,7 +51,7 @@ const PharmacistDashboard = () => {
   const fetchDailyIncome = async (token) => {
     try {
       const response = await axios.get(
-          "http://localhost:3000/api/invoices/sales/daily-income",
+          "/api/invoices/sales/daily-income",
           { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -70,7 +70,7 @@ const PharmacistDashboard = () => {
 
   const fetchRevenueData = async (token) => {
     try {
-      const response = await axios.get("http://localhost:3000/api/invoices/revenue/monthly", {
+      const response = await axios.get("/api/invoices/revenue/monthly", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRevenueData(response.data);
@@ -84,17 +84,17 @@ const PharmacistDashboard = () => {
 
   const fetchDashboardData = async (token) => {
     try {
-      const lowStockResponse = await axios.get("http://localhost:3000/api/medicines/low-stock", {
+      const lowStockResponse = await axios.get("/api/medicines/low-stock", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setLowStockAlerts(lowStockResponse.data);
 
-      const nearExpiryResponse = await axios.get("http://localhost:3000/api/medicines/near-expiry", {
+      const nearExpiryResponse = await axios.get("/api/medicines/near-expiry", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNearExpiryAlerts(nearExpiryResponse.data);
 
-      const outOfStockResponse = await axios.get("http://localhost:3000/api/medicines/out-of-stock", {
+      const outOfStockResponse = await axios.get("/api/medicines/out-of-stock", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOutOfStockAlerts(outOfStockResponse.data);
@@ -106,7 +106,7 @@ const PharmacistDashboard = () => {
 
   const fetchUserProfile = async (token) => {
     try {
-      const response = await axios.get("http://localhost:3000/api/users/profile", {
+      const response = await axios.get("/api/users/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUserName(response.data.name);

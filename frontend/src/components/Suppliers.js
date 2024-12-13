@@ -42,7 +42,7 @@ const Suppliers = () => {
     const fetchSuppliers = async () => {
         try {
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            const response = await axios.get('http://localhost:3000/api/suppliers', {
+            const response = await axios.get('/api/suppliers', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -77,7 +77,7 @@ const Suppliers = () => {
     const handleAddSupplier = async (values) => {
         try {
             const token = sessionStorage.getItem('token');
-            const response = await axios.post('http://localhost:3000/api/suppliers', values, {
+            const response = await axios.post('/api/suppliers', values, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSuppliers([...suppliers, response.data]);
@@ -99,7 +99,7 @@ const Suppliers = () => {
             };
     
             const response = await axios.put(
-                `http://localhost:3000/api/suppliers/${payload.id}`,
+                `/api/suppliers/${payload.id}`,
                 payload,
                 {
                     headers: { Authorization: `Bearer ${token}` }
@@ -129,7 +129,7 @@ const Suppliers = () => {
     const deleteSupplier = async (id) => {
         try {
             const token = sessionStorage.getItem('token');
-            await axios.delete(`http://localhost:3000/api/suppliers/${id}`, {
+            await axios.delete(`/api/suppliers/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSuppliers(suppliers.filter(supplier => supplier.id !== id));

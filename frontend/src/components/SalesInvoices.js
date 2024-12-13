@@ -35,7 +35,7 @@ const SalesInvoices = () => {
         try {
             const token =
                 localStorage.getItem("token") || sessionStorage.getItem("token");
-            const response = await axios.get("http://localhost:3000/api/invoices", {
+            const response = await axios.get("/api/invoices", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -90,7 +90,7 @@ const SalesInvoices = () => {
     const deleteInvoice = async (id) => {
         try {
             const token = sessionStorage.getItem("token");
-            await axios.delete(`http://localhost:3000/api/invoices/${id}`, {
+            await axios.delete(`/api/invoices/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             // Remove the deleted invoice from both invoices and filteredInvoices state

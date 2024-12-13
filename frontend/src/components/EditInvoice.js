@@ -35,7 +35,7 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
                 message.error("Authentication token is missing.");
                 return [];
             }
-            const response = await axios.get('http://localhost:3000/api/medicines', {
+            const response = await axios.get('/api/medicines', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             console.log("Fetched Medicines:", response.data); // Debugging line
@@ -123,7 +123,7 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
             }
 
             const response = await axios.get(
-                `http://localhost:3000/api/customers/phone/${phone}`,
+                `/api/customers/phone/${phone}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -291,7 +291,7 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
                 // Fetch or create customer logic
                 try {
                     const response = await axios.get(
-                        `http://localhost:3000/api/customers/phone/${values.customer_phone}`,
+                        `/api/customers/phone/${values.customer_phone}`,
                         { headers: { Authorization: `Bearer ${token}` } }
                     );
                     if (response.data) {
@@ -333,7 +333,7 @@ const EditInvoice = ({ visible, onEdit, onCancel, invoice }) => {
             console.log("Payload sent to backend:", payload);
 
             // Make PUT request to update the invoice
-            const response = await axios.put(`http://localhost:3000/api/invoices/${invoice.id}`, payload, {
+            const response = await axios.put(`/api/invoices/${invoice.id}`, payload, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

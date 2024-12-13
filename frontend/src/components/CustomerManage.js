@@ -33,7 +33,7 @@ const CustomerManage = () => {
         }
 
         try {
-            const response = await axios.get(`http://localhost:3000/api/customers/phone/${value}`, {
+            const response = await axios.get(`/api/customers/phone/${value}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -58,7 +58,7 @@ const CustomerManage = () => {
     const fetchCustomers = async () => {
         try {
             const token = sessionStorage.getItem("token");
-            const response = await axios.get("http://localhost:3000/api/customers", {
+            const response = await axios.get("/api/customers", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setCustomers(response.data);
@@ -73,7 +73,7 @@ const CustomerManage = () => {
         try {
             const token = sessionStorage.getItem("token");
             const response = await axios.post(
-                "http://localhost:3000/api/customers",
+                "/api/customers",
                 values,
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -91,7 +91,7 @@ const CustomerManage = () => {
         try {
             const token = sessionStorage.getItem("token");
             const response = await axios.put(
-                `http://localhost:3000/api/customers/${editingCustomer.id}`,
+                `/api/customers/${editingCustomer.id}`,
                 values,
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -113,7 +113,7 @@ const CustomerManage = () => {
     const handleDeleteCustomer = async (id) => {
         try {
             const token = sessionStorage.getItem("token");
-            await axios.delete(`http://localhost:3000/api/customers/${id}`, {
+            await axios.delete(`/api/customers/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setCustomers(customers.filter((customer) => customer.id !== id));

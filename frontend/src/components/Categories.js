@@ -39,7 +39,7 @@ const Categories = () => {
     const fetchCategories = async () => {
         try {
             const token = localStorage.getItem('token') || sessionStorage.getItem('token'); // Retrieve the token
-            const response = await axios.get('http://localhost:3000/api/categories', {
+            const response = await axios.get('/api/categories', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -92,7 +92,7 @@ const Categories = () => {
                 name: values.name,
                 description: values.des
             };
-            await axios.put(`http://localhost:3000/api/categories/${currentCategory.key}`, payload, {
+            await axios.put(`/api/categories/${currentCategory.key}`, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -114,7 +114,7 @@ const Categories = () => {
     const deleteCategory = async (key) => {
         try {
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            await axios.delete(`http://localhost:3000/api/categories/${key}`, {
+            await axios.delete(`/api/categories/${key}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
