@@ -25,7 +25,7 @@ const customerRoutes = require('./routes/customerRoutes');
 // Serve static files from the 'uploads' directory
 //app.js
 // Middleware
-app.use(cors());
+app.use(cors()); //checked
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
