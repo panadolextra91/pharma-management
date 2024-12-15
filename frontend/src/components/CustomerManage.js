@@ -9,10 +9,10 @@ import {Table, Button, Space, message, Avatar, Modal, Input} from "antd";
 import AdminSidebar from "./AdminSidebar";
 import PharmacistSidebar from "./PharmacistSidebar";
 import "./CustomerManage.css";
-import axios from "axios";
 import AddCustomerForm from './AddCustomerForm';
 import EditCustomerForm from './EditCustomerForm';
 import {useNavigate} from "react-router-dom";
+import api from '../api'
 
 const CustomerManage = () => {
     const { Search } = Input;
@@ -33,7 +33,7 @@ const CustomerManage = () => {
         }
 
         try {
-            const response = await axios.get(`http://localhost:3000/api/customers/phone/${value}`, {
+            const response = await api.get(`/customers/phone/${value}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -58,7 +58,7 @@ const CustomerManage = () => {
     const fetchCustomers = async () => {
         try {
             const token = sessionStorage.getItem("token");
-            const response = await axios.get("http://localhost:3000/api/customers", {
+            const response = await api.get("/customers", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setCustomers(response.data);
@@ -72,8 +72,8 @@ const CustomerManage = () => {
     const handleAddCustomer = async (values) => {
         try {
             const token = sessionStorage.getItem("token");
-            const response = await axios.post(
-                "http://localhost:3000/api/customers",
+            const response = await api.post(
+                "/customers",
                 values,
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -90,8 +90,8 @@ const CustomerManage = () => {
     const handleEditCustomer = async (values) => {
         try {
             const token = sessionStorage.getItem("token");
-            const response = await axios.put(
-                `http://localhost:3000/api/customers/${editingCustomer.id}`,
+            const response = await api.put(
+                `/customers/${editingCustomer.id}`,
                 values,
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -113,7 +113,7 @@ const CustomerManage = () => {
     const handleDeleteCustomer = async (id) => {
         try {
             const token = sessionStorage.getItem("token");
-            await axios.delete(`http://localhost:3000/api/customers/${id}`, {
+            await api.delete(`/customers/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setCustomers(customers.filter((customer) => customer.id !== id));

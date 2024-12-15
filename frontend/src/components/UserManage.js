@@ -11,8 +11,8 @@ import PharmacistSidebar from "./PharmacistSidebar";
 import AddUserForm from "./AddUserForm";
 import EditUserForm from "./EditUserForm"; // Import the EditUserForm component
 import "./UserManage.css";
-import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import api from '../api'
 
 const UserManage = () => {
     const navigate = useNavigate();
@@ -34,7 +34,7 @@ const UserManage = () => {
     const fetchUsers = async () => {
         try {
             const token = sessionStorage.getItem("token");
-            const response = await axios.get("http://localhost:3000/api/users", {
+            const response = await api.get("/users", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setUsers(response.data);
@@ -48,8 +48,8 @@ const UserManage = () => {
     const handleAddUser = async (values) => {
         try {
             const token = sessionStorage.getItem("token");
-            const response = await axios.post(
-                "http://localhost:3000/api/users",
+            const response = await api.post(
+                "/users",
                 values,
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -67,8 +67,8 @@ const UserManage = () => {
         console.log("Edit values:", values); // Log input values
         try {
             const token = sessionStorage.getItem("token");
-            const response = await axios.put(
-                `http://localhost:3000/api/users/${editingUser.id}`,
+            const response = await api.put(
+                `/users/${editingUser.id}`,
                 values,
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -99,7 +99,7 @@ const UserManage = () => {
     const handleDeleteUser = async (id) => {
         try {
             const token = sessionStorage.getItem("token");
-            await axios.delete(`http://localhost:3000/api/users/${id}`, {
+            await api.delete(`/users/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setUsers(users.filter((user) => user.id !== id));

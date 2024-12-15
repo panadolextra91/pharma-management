@@ -4,6 +4,7 @@ import './Login.css';
 import logo from '../imgs/trace.svg';
 import { Input, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import api from '../api';
 import axios from "axios";
 
 const Login = () => {
@@ -16,7 +17,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:3000/api/users/login', {
+            const response = await api.post('/users/login', {
                 username,
                 password
             });
@@ -33,7 +34,7 @@ const Login = () => {
             }
 
             // Fetch user profile to check role
-            const profileResponse = await axios.get('http://localhost:3000/api/users/profile', {
+            const profileResponse = await api.get('/users/profile', {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
