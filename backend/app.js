@@ -25,11 +25,7 @@ const customerRoutes = require('./routes/customerRoutes');
 // Serve static files from the 'uploads' directory
 //app.js
 // Middleware
-app.use(cors({
-    origin: ['https://toilaconmeo.netlify.app', 'http://localhost:3001'], // Your frontend's URL
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
-}));
+app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
